@@ -37,7 +37,7 @@ const ControlsMobile = () => {
       .set(Math.sin(yaw.current + Math.PI / 2), 0, Math.cos(yaw.current + Math.PI / 2))
       .normalize();
 
-    const speed = 1.6 + Math.abs(mobileMove.y) * 0.4;
+    const speed = 2.2 + Math.abs(mobileMove.y) * 0.6;
     camera.position.addScaledVector(forward.current, -mobileMove.y * speed * delta);
     camera.position.addScaledVector(right.current, mobileMove.x * speed * delta);
 

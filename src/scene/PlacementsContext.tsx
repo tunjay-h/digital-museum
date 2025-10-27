@@ -26,7 +26,7 @@ const toPlacement = (
 const endPlacement = (president: President): FramePlacement => ({
   president,
   position: [0, FRAME_HEIGHT, END_Z],
-  rotation: [0, Math.PI, 0],
+  rotation: [0, 0, 0],
   side: 'end',
 });
 

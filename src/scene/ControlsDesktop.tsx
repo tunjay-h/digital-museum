@@ -101,8 +101,8 @@ const ControlsDesktop = () => {
   }, [camera]);
 
   useFrame((_, delta) => {
-    const speed = movement.current.sprint ? 3.2 : 1.8;
-    const acceleration = speed * delta * 2.4;
+    const speed = movement.current.sprint ? 20 : 15;
+    const acceleration = speed * delta * 2.6;
     const damping = Math.pow(0.88, delta * 60);
 
     const direction = new Vector3();

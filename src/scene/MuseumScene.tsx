@@ -1,6 +1,7 @@
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useLoader, useThree } from '@react-three/fiber';
 import { Preload } from '@react-three/drei';
-import { Suspense, useMemo } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
+import * as THREE from 'three';
 import ControlsDesktop from './ControlsDesktop';
 import ControlsMobile from './ControlsMobile';
 import HallLayout from './HallLayout';
@@ -12,6 +13,26 @@ import { CAMERA_EYE_HEIGHT } from './constants';
 interface MuseumSceneProps {
   isMobile: boolean;
 }
+
+const CloudsBackground = () => {
+  const texture = useLoader(THREE.TextureLoader, '/images/clouds.jpg');
+  const { scene, gl } = useThree((state) => ({ scene: state.scene, gl: state.gl }));
+
+  useEffect(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+    texture.minFilter = THREE.LinearFilter;
+    texture.magFilter = THREE.LinearFilter;
+
+    const previousBackground = scene.background;
+    scene.background = texture;
+    return () => {
+      scene.background = previousBackground;
+    };
+  }, [gl, scene, texture]);
+
+  return null;
+};
 
 const MuseumScene = ({ isMobile }: MuseumSceneProps) => {
   const settings = useMuseumStore((state) => state.settings);
@@ -26,14 +47,14 @@ const MuseumScene = ({ isMobile }: MuseumSceneProps) => {
       camera={{ position: [0, CAMERA_EYE_HEIGHT, 2.8], fov: 60 }}
       dpr={dpr}
       gl={{ antialias: !settings.reduceEffects }}
-      style={{ background: '#060709' }}
+      style={{ background: '#dfe7f5' }}
     >
-      <color attach="background" args={['#060709']} />
-      <fog attach="fog" args={['#060709', 12, 80]} />
+      <fog attach="fog" args={['#dfe7f5', 18, 90]} />
       <ambientLight intensity={0.5} />
       <pointLight position={[0, 5, 2]} intensity={settings.reduceEffects ? 0.6 : 0.9} />
       <pointLight position={[0, 4, -12]} intensity={settings.reduceEffects ? 0.4 : 0.7} />
       <Suspense fallback={null}>
+        <CloudsBackground />
         <PlacementsProvider>
           <HallLayout />
           <FocusManager />
