@@ -1,0 +1,41 @@
+{
+  "hud": {
+    "title": "Prezidentlər qalereyası",
+    "subtitle": "İsmailiyyə Sarayının ruhunda rəqəmsal koridor"
+  },
+  "help": {
+    "desktop": {
+      "title": "Masaüstü nəzarətləri",
+      "movement": "WASD və ya ox düymələri ilə hərəkət edin",
+      "look": "Siçanla ətrafınıza baxın",
+      "focus": "F düyməsi – ən yaxın portreti fokus et",
+      "sprint": "Shift – qısa müddətə sürətlənmə",
+      "unlock": "Esc – kursoru azad et"
+    },
+    "mobile": {
+      "title": "Mobil nəzarətləri",
+      "joystick": "Sol virtual joystiklə hərəkət",
+      "drag": "Sağ tərəfi sürüşdürərək baxış bucağını dəyiş",
+      "tap": "Portretə toxun – info panel açılsın"
+    }
+  },
+  "settings": {
+    "sensitivityHelp": "Həssaslıq 0.4–1.6 aralığında tənzimlənə bilər",
+    "reduceEffectsHelp": "Parlaq işıq dekallarını və parallax animasiyasını söndürür",
+    "cameraBobHelp": "Mədə bulantısını azaltmaq üçün kamera yellənməsini deaktiv edir",
+    "crosshairHelp": "Göz fokusunu sabitləşdirmək üçün nazik göstərici"
+  },
+  "info": {
+    "term": "Prezidentlik",
+    "termPresent": "Hazırda xidmət edir",
+    "sources": "Mənbələr",
+    "transcript": "Transkript",
+    "openAudio": "Səsi aç",
+    "noAudio": "Audio faylı hələ mövcud deyil",
+    "openTts": "Mətn-dan-səs istifadə et"
+  },
+  "credits": {
+    "title": "Mənbələr və təşəkkür",
+    "placeholder": "Tam atribusiya siyahısı layihənin növbəti mərhələsində əlavə olunacaq."
+  }
+}

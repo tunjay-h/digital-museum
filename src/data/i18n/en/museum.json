@@ -1,0 +1,41 @@
+{
+  "hud": {
+    "title": "Presidential gallery",
+    "subtitle": "A digital corridor inspired by the Ismailiyya Palace"
+  },
+  "help": {
+    "desktop": {
+      "title": "Desktop controls",
+      "movement": "Move with WASD or arrow keys",
+      "look": "Look around with the mouse",
+      "focus": "Press F to focus the nearest portrait",
+      "sprint": "Hold Shift to sprint briefly",
+      "unlock": "Press Esc to release the pointer"
+    },
+    "mobile": {
+      "title": "Mobile controls",
+      "joystick": "Use the left joystick to move",
+      "drag": "Drag on the right to adjust view",
+      "tap": "Tap a frame to open its info panel"
+    }
+  },
+  "settings": {
+    "sensitivityHelp": "Adjust look sensitivity between 0.4 and 1.6",
+    "reduceEffectsHelp": "Disables emissive decals and parallax for performance",
+    "cameraBobHelp": "Disable subtle camera sway to reduce motion sickness",
+    "crosshairHelp": "Adds a thin reticle to stabilize focus"
+  },
+  "info": {
+    "term": "Term",
+    "termPresent": "Serving",
+    "sources": "Sources",
+    "transcript": "Transcript",
+    "openAudio": "Open audio",
+    "noAudio": "Audio track not yet available",
+    "openTts": "Use text-to-speech"
+  },
+  "credits": {
+    "title": "Credits & acknowledgements",
+    "placeholder": "Full attribution will be added in the next milestone."
+  }
+}
