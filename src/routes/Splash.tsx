@@ -6,8 +6,7 @@ import { useMuseumStore } from '../store/useMuseumStore';
 import LanguageSwitch from '../ui/LanguageSwitch';
 import presidents from '../data/presidents';
 
-const heroImage =
-  'https://upload.wikimedia.org/wikipedia/commons/6/69/%C4%B0smailiyye_Palace_Baku_2012.jpg';
+const heroImage = '/images/ismailiyya-palace.jpeg';
 
 const Splash = () => {
   const { t } = useTranslation(['ui']);
@@ -61,10 +60,11 @@ const Splash = () => {
         style={{
           position: 'absolute',
           inset: 0,
-          backgroundImage: `linear-gradient(180deg, rgba(8, 8, 10, 0.62), rgba(8, 8, 10, 0.86)), url(${heroImage})`,
+          backgroundImage: `linear-gradient(180deg, rgba(18, 16, 24, 0.38), rgba(12, 10, 18, 0.64)), url(${heroImage})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'saturate(0.85)',
+          backgroundRepeat: 'no-repeat',
+          filter: 'saturate(1.05) brightness(1.02)',
         }}
       />
       <div
