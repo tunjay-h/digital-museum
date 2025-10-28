@@ -4,12 +4,10 @@ import { useTranslation } from 'react-i18next';
 import MuseumScene from '../scene/MuseumScene';
 import HUD from '../ui/HUD';
 import InfoPanel from '../ui/InfoPanel';
-import SettingsPanel from '../ui/SettingsPanel';
-import HelpOverlay from '../ui/HelpOverlay';
-import LoadingOverlay from '../ui/LoadingOverlay';
 import MobileOrientationPrompt from '../ui/MobileOrientationPrompt';
 import MobileControlsOverlay from '../ui/MobileControlsOverlay';
 import FallbackGallery from '../ui/FallbackGallery';
+import MuseumOverlay from '../ui/MuseumOverlay';
 import { isMobileLandscapeRequired, isTouchDevice } from '../lib/device';
 import { isWebGLSupported } from '../lib/webgl';
 import { useMuseumStore } from '../store/useMuseumStore';
@@ -26,10 +24,22 @@ const Hall = () => {
   const setEnteredMuseum = useMuseumStore((state) => state.setEnteredMuseum);
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
   const closeInfoPanel = useMuseumStore((state) => state.closeInfoPanel);
+  const toggleOverlay = useMuseumStore((state) => state.toggleOverlay);
 
   useEffect(() => {
     document.title = `${t('appTitle')} — Hallway`;
   }, [t]);
+
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.code === 'KeyH') {
+        event.preventDefault();
+        toggleOverlay();
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [toggleOverlay]);
 
   useEffect(() => {
     setWebglSupported(isWebGLSupported());
@@ -85,9 +95,7 @@ const Hall = () => {
       {webglSupported && <MuseumScene isMobile={isMobile} />}
       <HUD isMobile={isMobile} />
       <InfoPanel />
-      <SettingsPanel />
-      <HelpOverlay isMobile={isMobile} />
-      <LoadingOverlay />
+      <MuseumOverlay isMobile={isMobile} />
       {isMobile && <MobileControlsOverlay />}
       {isMobile && <MobileOrientationPrompt visible={landscapePrompt} />}
     </div>

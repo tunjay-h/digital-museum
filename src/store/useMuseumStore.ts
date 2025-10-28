@@ -15,25 +15,28 @@ interface MuseumState {
   isInfoPanelOpen: boolean;
   selectedPortraitId: string | null;
   focusCandidateId: string | null;
-  isSettingsOpen: boolean;
-  isHelpOpen: boolean;
+  isOverlayOpen: boolean;
   language: SupportedLocale;
   currentPath: string;
   settings: MuseumSettings;
   mobileMove: { x: number; y: number };
   mobileLook: { x: number; y: number };
+  pointerLock: {
+    lock: (() => void) | null;
+    unlock: (() => void) | null;
+  };
   setEnteredMuseum: (entered: boolean) => void;
   setSelectedPortraitId: (id: string | null) => void;
   setFocusCandidateId: (id: string | null) => void;
   openInfoPanel: (id: string) => void;
   closeInfoPanel: () => void;
-  toggleSettings: (value?: boolean) => void;
-  toggleHelp: (value?: boolean) => void;
+  toggleOverlay: (value?: boolean) => void;
   setLanguage: (locale: SupportedLocale) => void;
   setCurrentPath: (path: string) => void;
   updateSettings: (patch: Partial<MuseumSettings>) => void;
   setMobileMove: (vector: { x: number; y: number }) => void;
   setMobileLook: (vector: { x: number; y: number }) => void;
+  setPointerLockHandlers: (handlers: Partial<{ lock: (() => void) | null; unlock: (() => void) | null }>) => void;
 }
 
 export const useMuseumStore = create<MuseumState>((set) => ({
@@ -41,8 +44,7 @@ export const useMuseumStore = create<MuseumState>((set) => ({
   isInfoPanelOpen: false,
   selectedPortraitId: null,
   focusCandidateId: null,
-  isSettingsOpen: false,
-  isHelpOpen: false,
+  isOverlayOpen: true,
   language: 'az',
   currentPath: '/',
   settings: {
@@ -54,6 +56,10 @@ export const useMuseumStore = create<MuseumState>((set) => ({
   },
   mobileMove: { x: 0, y: 0 },
   mobileLook: { x: 0, y: 0 },
+  pointerLock: {
+    lock: null,
+    unlock: null,
+  },
   setEnteredMuseum: (entered) => set({ enteredMuseum: entered }),
   setSelectedPortraitId: (id) =>
     set({ selectedPortraitId: id, isInfoPanelOpen: !!id }),
@@ -62,20 +68,24 @@ export const useMuseumStore = create<MuseumState>((set) => ({
     set({ selectedPortraitId: id, isInfoPanelOpen: true }),
   closeInfoPanel: () =>
     set({ isInfoPanelOpen: false, selectedPortraitId: null }),
-  toggleSettings: (value) =>
-    set((state) => ({
-      isSettingsOpen: value ?? !state.isSettingsOpen,
-      isHelpOpen: value === true ? false : state.isHelpOpen,
-    })),
-  toggleHelp: (value) =>
-    set((state) => ({
-      isHelpOpen: value ?? !state.isHelpOpen,
-      isSettingsOpen: value === true ? false : state.isSettingsOpen,
-    })),
+  toggleOverlay: (value) =>
+    set((state) => {
+      const isOverlayOpen = value ?? !state.isOverlayOpen;
+      if (isOverlayOpen) {
+        state.pointerLock.unlock?.();
+      } else {
+        state.pointerLock.lock?.();
+      }
+      return { isOverlayOpen };
+    }),
   setLanguage: (locale) => set({ language: locale }),
   setCurrentPath: (path) => set({ currentPath: path }),
   updateSettings: (patch) =>
     set((state) => ({ settings: { ...state.settings, ...patch } })),
   setMobileMove: (vector) => set({ mobileMove: vector }),
   setMobileLook: (vector) => set({ mobileLook: vector }),
+  setPointerLockHandlers: (handlers) =>
+    set((state) => ({
+      pointerLock: { ...state.pointerLock, ...handlers },
+    })),
 }));

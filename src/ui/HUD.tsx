@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMuseumStore } from '../store/useMuseumStore';
-import LanguageSwitch from './LanguageSwitch';
 import presidents from '../data/presidents';
 
 interface HUDProps {
@@ -10,8 +9,6 @@ interface HUDProps {
 
 const HUD = ({ isMobile }: HUDProps) => {
   const { t } = useTranslation(['ui', 'museum']);
-  const toggleSettings = useMuseumStore((state) => state.toggleSettings);
-  const toggleHelp = useMuseumStore((state) => state.toggleHelp);
   const focusCandidateId = useMuseumStore((state) => state.focusCandidateId);
   const selectedPortraitId = useMuseumStore((state) => state.selectedPortraitId);
   const settings = useMuseumStore((state) => state.settings);
@@ -40,19 +37,7 @@ const HUD = ({ isMobile }: HUDProps) => {
             {t('museum:hud.subtitle')}
           </p>
         </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'flex-end' }}>
-          <div style={{ pointerEvents: 'auto' }}>
-            <LanguageSwitch compact />
-          </div>
-          <div style={{ display: 'flex', gap: '0.75rem', pointerEvents: 'auto' }}>
-            <button className="ghost" onClick={() => toggleHelp(true)}>
-              {t('help')}
-            </button>
-            <button className="ghost" onClick={() => toggleSettings(true)}>
-              {t('settings')}
-            </button>
-          </div>
-        </div>
+        <div style={{ pointerEvents: 'none' }} />
       </header>
       <div style={{ alignSelf: 'center' }}>
         {settings.showCrosshair && (
@@ -85,33 +70,7 @@ const HUD = ({ isMobile }: HUDProps) => {
           </div>
         )}
       </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', pointerEvents: 'none' }}>
-        <div className="hud-panel" style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', maxWidth: '320px' }}>
-          {isMobile ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <span>{t('museum:help.mobile.title')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.mobile.joystick')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.mobile.drag')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.mobile.tap')}</span>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <span>{t('museum:help.desktop.title')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.desktop.movement')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.desktop.look')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.desktop.focus')}</span>
-              <span style={{ opacity: 0.6 }}>{t('museum:help.desktop.sprint')}</span>
-            </div>
-          )}
-        </div>
-        <div
-          className="hud-panel"
-          style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', maxWidth: '220px', textAlign: 'right' }}
-        >
-          <span style={{ display: 'block', opacity: 0.7 }}>{t('credits')}</span>
-          <span style={{ opacity: 0.55 }}>{t('museum:credits.placeholder')}</span>
-        </div>
-      </div>
+      <div style={{ pointerEvents: 'none' }} />
     </div>
   );
 };

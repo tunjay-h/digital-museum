@@ -44,6 +44,7 @@
   "dismiss": "Bağla",
   "loadingPercent": "Yüklənmə %{value}%",
   "toggleHelp": "Kömək ekranını aç",
+  "pressHToOpenOverlay": "Bu paneli bağlamaq və kursoru kilidləmək üçün H düyməsini basın. İstənilən vaxt yenidən açmaq üçün H düyməsini sıxın.",
   "sprint": "Sürətlənmə",
   "focus": "Ən yaxın portreti fokus et",
   "togglePointer": "Kursoru kilidlə/ayır",
