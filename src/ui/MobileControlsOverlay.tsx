@@ -14,9 +14,8 @@ const MobileControlsOverlay = () => {
   const movePointerId = useRef<number | null>(null);
   const lookPointerId = useRef<number | null>(null);
   const moveOrigin = useRef({ x: 0, y: 0 });
-  const lookOrigin = useRef({ x: 0, y: 0 });
-  const [moveVisual, setMoveVisual] = useState({ x: 0, y: 0 });
-  const [lookVisual, setLookVisual] = useState({ x: 0, y: 0 });
+  const [moveVisual, setMoveVisual] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [lookVisual, setLookVisual] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [moveActive, setMoveActive] = useState(false);
   const [lookActive, setLookActive] = useState(false);
 
@@ -49,29 +48,57 @@ const MobileControlsOverlay = () => {
     (event.target as HTMLElement).releasePointerCapture(event.pointerId);
   };
 
+  const applyLookDelta = (x: number, y: number) => {
+    const current = useMuseumStore.getState().mobileLook;
+
+    if (x === 0 && y === 0) {
+      if (current.x !== 0 || current.y !== 0) {
+        setMobileLook({ x: 0, y: 0 });
+      }
+      return;
+    }
+
+    setMobileLook({ x: current.x + x, y: current.y + y });
+  };
+
   const handleLookStart = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (lookPointerId.current !== null) return;
     lookPointerId.current = event.pointerId;
-    lookOrigin.current = { x: event.clientX, y: event.clientY };
     (event.target as HTMLElement).setPointerCapture(event.pointerId);
     setLookVisual({ x: 0, y: 0 });
     setLookActive(true);
   };
 
+  const curve = (value: number) =>
+    Math.sign(value) * Math.pow(Math.abs(value) * 0.0015, 0.85);
+
   const handleLookMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (lookPointerId.current !== event.pointerId) return;
-    const dx = event.clientX - lookOrigin.current.x;
-    const dy = event.clientY - lookOrigin.current.y;
-    const nx = clamp(dx / LOOK_RADIUS, -1, 1);
-    const ny = clamp(dy / LOOK_RADIUS, -1, 1);
-    setLookVisual({ x: nx, y: ny });
-    setMobileLook({ x: nx, y: ny });
+
+    if (event.pressure === 0) {
+      applyLookDelta(0, 0);
+      setLookActive(false);
+      setLookVisual({ x: 0, y: 0 });
+      return;
+    }
+
+    const movementX = event.movementX ?? 0;
+    const movementY = event.movementY ?? 0;
+    const deltaX = curve(movementX);
+    const deltaY = curve(movementY);
+
+    applyLookDelta(deltaX, deltaY);
+    setLookVisual((prev) => {
+      const nextX = clamp(prev.x + deltaX * 8, -1, 1);
+      const nextY = clamp(prev.y + deltaY * 8, -1, 1);
+      return { x: nextX, y: nextY };
+    });
   };
 
   const handleLookEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (lookPointerId.current !== event.pointerId) return;
     lookPointerId.current = null;
-    setMobileLook({ x: 0, y: 0 });
+    applyLookDelta(0, 0);
     setLookVisual({ x: 0, y: 0 });
     setLookActive(false);
     (event.target as HTMLElement).releasePointerCapture(event.pointerId);
