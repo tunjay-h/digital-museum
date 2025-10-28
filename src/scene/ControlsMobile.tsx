@@ -11,7 +11,6 @@ const ControlsMobile = () => {
   const settings = useMuseumStore((state) => state.settings);
   const mobileMove = useMuseumStore((state) => state.mobileMove);
   const mobileLook = useMuseumStore((state) => state.mobileLook);
-  const setMobileLook = useMuseumStore((state) => state.setMobileLook);
   const bobPhase = useRef(0);
   const yaw = useRef(0);
   const pitch = useRef(0);
@@ -37,9 +36,10 @@ const ControlsMobile = () => {
       .set(Math.sin(yaw.current + Math.PI / 2), 0, Math.cos(yaw.current + Math.PI / 2))
       .normalize();
 
-    const speed = 2.2 + Math.abs(mobileMove.y) * 0.6;
-    camera.position.addScaledVector(forward.current, -mobileMove.y * speed * delta);
-    camera.position.addScaledVector(right.current, mobileMove.x * speed * delta);
+    const forwardSpeed = 3.6 + Math.abs(mobileMove.y) * 1.2;
+    const strafeSpeed = 3.2 + Math.abs(mobileMove.x) * 0.8;
+    camera.position.addScaledVector(forward.current, -mobileMove.y * forwardSpeed * delta);
+    camera.position.addScaledVector(right.current, mobileMove.x * strafeSpeed * delta);
 
     const minX = -CORRIDOR_WIDTH / 2 + 0.6;
     const maxX = CORRIDOR_WIDTH / 2 - 0.6;
@@ -61,9 +61,6 @@ const ControlsMobile = () => {
       camera.position.y = CAMERA_EYE_HEIGHT;
     }
 
-    if (mobileLook.x !== 0 || mobileLook.y !== 0) {
-      setMobileLook({ x: 0, y: 0 });
-    }
   });
 
   return null;

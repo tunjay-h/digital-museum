@@ -25,6 +25,7 @@ const InfoPanel = () => {
   const [linkCopied, setLinkCopied] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isCompactLayout, setIsCompactLayout] = useState(false);
 
   const president = useMemo(
     () => presidents.find((entry) => entry.person_id === selectedPortraitId),
@@ -51,6 +52,22 @@ const InfoPanel = () => {
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
   }, [closeInfoPanel, isOpen]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === 'undefined') return;
+      const { innerWidth, innerHeight } = window;
+      setIsCompactLayout(innerWidth <= 900 || innerHeight <= 520);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   if (!isOpen || !president) {
     return null;
@@ -90,10 +107,12 @@ const InfoPanel = () => {
       className="hud-panel"
       style={{
         position: 'absolute',
-        inset: 'auto 2rem 2rem auto',
-        width: 'min(420px, 90vw)',
-        padding: '2rem',
+        inset: isCompactLayout ? 'auto 1rem 1rem 1rem' : 'auto 2rem 2rem auto',
+        width: isCompactLayout ? 'min(340px, 92vw)' : 'min(420px, 90vw)',
+        padding: isCompactLayout ? '1.5rem' : '2rem',
         pointerEvents: 'auto',
+        maxHeight: isCompactLayout ? '70vh' : '80vh',
+        overflowY: 'auto',
       }}
     >
       <button
@@ -103,17 +122,32 @@ const InfoPanel = () => {
       >
         {t('close')}
       </button>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: isCompactLayout ? '0.75rem' : '1rem',
+        }}
+      >
         <div>
-          <span style={{ opacity: 0.6, fontSize: '0.8rem' }}>{t('museum:info.term')}</span>
+          <span style={{ opacity: 0.6, fontSize: isCompactLayout ? '0.75rem' : '0.8rem' }}>
+            {t('museum:info.term')}
+          </span>
           <p style={{ margin: '0.25rem 0 0 0', fontWeight: 600 }}>{term}</p>
         </div>
         <div>
-          <h3 style={{ margin: 0, fontSize: '1.8rem' }}>{name}</h3>
-          <p style={{ opacity: 0.7, fontSize: '0.95rem' }}>{description}</p>
+          <h3 style={{ margin: 0, fontSize: isCompactLayout ? '1.5rem' : '1.8rem' }}>{name}</h3>
+          <p style={{ opacity: 0.7, fontSize: isCompactLayout ? '0.9rem' : '0.95rem' }}>{description}</p>
         </div>
         <div>
-          <span style={{ display: 'block', marginBottom: '0.35rem', fontSize: '0.85rem', opacity: 0.6 }}>
+          <span
+            style={{
+              display: 'block',
+              marginBottom: '0.35rem',
+              fontSize: isCompactLayout ? '0.8rem' : '0.85rem',
+              opacity: 0.6,
+            }}
+          >
             {t('ui:sources')}
           </span>
           <ul style={{ margin: 0, paddingLeft: '1.1rem', opacity: 0.7 }}>
@@ -122,7 +156,7 @@ const InfoPanel = () => {
             ))}
           </ul>
         </div>
-        <div className="hud-panel" style={{ padding: '1rem' }}>
+        <div className="hud-panel" style={{ padding: isCompactLayout ? '0.85rem' : '1rem' }}>
           <span style={{ display: 'block', marginBottom: '0.5rem', opacity: 0.6 }}>{t('audio')}</span>
           {audioSrc ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -135,11 +169,29 @@ const InfoPanel = () => {
             <div style={{ opacity: 0.5 }}>{t('audioUnavailable')}</div>
           )}
         </div>
-        <div className="hud-panel" style={{ padding: '0.85rem 1rem', display: 'flex', gap: '0.75rem' }}>
+        <div
+          className="hud-panel"
+          style={{
+            padding: isCompactLayout ? '0.75rem 0.9rem' : '0.85rem 1rem',
+            display: 'flex',
+            gap: '0.75rem',
+            alignItems: 'center',
+          }}
+        >
           <button className="ghost" onClick={handleCopy}>
             {linkCopied ? t('linkCopied') : t('copyLink')}
           </button>
-          <span style={{ alignSelf: 'center', opacity: 0.5, fontSize: '0.75rem' }}>{shareUrl}</span>
+          <span
+            style={{
+              opacity: 0.5,
+              fontSize: '0.75rem',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {shareUrl}
+          </span>
         </div>
       </div>
     </div>,
