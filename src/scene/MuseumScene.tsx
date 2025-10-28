@@ -43,6 +43,7 @@ const MuseumScene = ({ isMobile }: MuseumSceneProps) => {
 
   return (
     <Canvas
+      id="museum-canvas"
       shadows={false}
       camera={{ position: [0, CAMERA_EYE_HEIGHT, 2.8], fov: 60 }}
       dpr={dpr}

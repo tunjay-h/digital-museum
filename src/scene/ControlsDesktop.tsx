@@ -4,6 +4,7 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -14,9 +15,10 @@ const ControlsDesktop = () => {
   const bobPhase = useRef(0);
   const settings = useMuseumStore((state) => state.settings);
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
-  const toggleHelp = useMuseumStore((state) => state.toggleHelp);
+  const setPointerLockHandlers = useMuseumStore((state) => state.setPointerLockHandlers);
   const focusCandidateId = useMuseumStore((state) => state.focusCandidateId);
   const focusRef = useRef<string | null>(focusCandidateId);
+  const controlsRef = useRef<PointerLockControlsImpl | null>(null);
 
   useEffect(() => {
     focusRef.current = focusCandidateId;
@@ -48,11 +50,6 @@ const ControlsDesktop = () => {
         case 'KeyF':
           if (focusRef.current) {
             openInfoPanel(focusRef.current);
-          }
-          break;
-        case 'Slash':
-          if (event.shiftKey) {
-            toggleHelp(true);
           }
           break;
         default:
@@ -94,11 +91,22 @@ const ControlsDesktop = () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [openInfoPanel, toggleHelp]);
+  }, [openInfoPanel]);
 
   useEffect(() => {
     camera.position.set(0, CAMERA_EYE_HEIGHT, 2.8);
+    camera.rotation.set(0, 0, 0);
   }, [camera]);
+
+  useEffect(() => {
+    setPointerLockHandlers({
+      lock: () => controlsRef.current?.lock(),
+      unlock: () => controlsRef.current?.unlock(),
+    });
+    return () => {
+      setPointerLockHandlers({ lock: null, unlock: null });
+    };
+  }, [setPointerLockHandlers]);
 
   useFrame((_, delta) => {
     const speed = movement.current.sprint ? 20 : 15;
@@ -144,8 +152,9 @@ const ControlsDesktop = () => {
 
   return (
     <PointerLockControls
+      ref={controlsRef}
       makeDefault
-      selector="#root"
+      selector="#museum-canvas"
       pointerSpeed={settings.lookSensitivity}
     />
   );

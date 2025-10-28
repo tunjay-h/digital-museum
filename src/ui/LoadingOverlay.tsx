@@ -12,6 +12,7 @@ const LoadingOverlay = () => {
       const timeout = setTimeout(() => setVisible(false), 600);
       return () => clearTimeout(timeout);
     }
+
     setVisible(true);
     return undefined;
   }, [active, progress]);
@@ -28,6 +29,7 @@ const LoadingOverlay = () => {
         transform: 'translateX(-50%)',
         padding: '1rem 1.5rem',
         pointerEvents: 'none',
+        zIndex: 20,
       }}
     >
       <span style={{ display: 'block', fontSize: '0.9rem', marginBottom: '0.5rem' }}>
