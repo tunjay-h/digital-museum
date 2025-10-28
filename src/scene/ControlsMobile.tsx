@@ -11,7 +11,6 @@ const ControlsMobile = () => {
   const settings = useMuseumStore((state) => state.settings);
   const mobileMove = useMuseumStore((state) => state.mobileMove);
   const mobileLook = useMuseumStore((state) => state.mobileLook);
-  const setMobileLook = useMuseumStore((state) => state.setMobileLook);
   const bobPhase = useRef(0);
   const yaw = useRef(0);
   const pitch = useRef(0);
@@ -62,9 +61,6 @@ const ControlsMobile = () => {
       camera.position.y = CAMERA_EYE_HEIGHT;
     }
 
-    if (mobileLook.x !== 0 || mobileLook.y !== 0) {
-      setMobileLook({ x: 0, y: 0 });
-    }
   });
 
   return null;

@@ -60,14 +60,12 @@ const MobileControlsOverlay = () => {
 
   const handleLookMove = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (lookPointerId.current !== event.pointerId) return;
-    const movementX = event.movementX || 0;
-    const movementY = event.movementY || 0;
-    setMobileLook({ x: movementX / 80, y: movementY / 80 });
     const dx = event.clientX - lookOrigin.current.x;
     const dy = event.clientY - lookOrigin.current.y;
     const nx = clamp(dx / LOOK_RADIUS, -1, 1);
     const ny = clamp(dy / LOOK_RADIUS, -1, 1);
     setLookVisual({ x: nx, y: ny });
+    setMobileLook({ x: nx, y: ny });
   };
 
   const handleLookEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
