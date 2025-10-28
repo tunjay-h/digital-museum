@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { MeshBasicMaterial } from 'three';
 import { Html, useTexture } from '@react-three/drei';
 import type { FramePlacement } from '../types';
+import { useMuseumStore } from '../store/useMuseumStore';
 
 interface FrameProps {
   placement: FramePlacement;
@@ -13,6 +14,7 @@ const Frame = ({ placement, isHighlighted, onSelect }: FrameProps) => {
   const { president, position, rotation, side } = placement;
   const portraitTexture = useTexture(president.image_src);
   const [hovered, setHovered] = useState(false);
+  const language = useMuseumStore((state) => state.language);
 
   const frameMaterial = useMemo(() => {
     const material = new MeshBasicMaterial({
@@ -70,7 +72,7 @@ const Frame = ({ placement, isHighlighted, onSelect }: FrameProps) => {
             letterSpacing: '0.12em',
           }}
         >
-          {president.name_en}
+          {language === 'az' ? president.name_az : president.name_en}
         </div>
       </Html>
       <mesh position={[0, -1.4, 0]}>

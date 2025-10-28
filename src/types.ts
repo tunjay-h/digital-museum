@@ -8,11 +8,12 @@ export interface President {
   image_src: string;
   short_desc_en: string;
   short_desc_az: string;
+  description_en: string;
+  description_az: string;
   audio_az?: string;
   audio_en?: string;
   tts_text_en?: string;
   tts_text_az?: string;
-  sources: string[];
 }
 
 export interface FramePlacement {
