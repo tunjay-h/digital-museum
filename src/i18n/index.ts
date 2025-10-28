@@ -13,7 +13,7 @@ type BiosNamespace = Record<string, string>;
 const buildBios = (locale: 'az' | 'en'): BiosNamespace => {
   return presidents.reduce((acc, president: President) => {
     acc[president.person_id] =
-      locale === 'az' ? president.short_desc_az : president.short_desc_en;
+      locale === 'az' ? president.description_az : president.description_en;
     return acc;
   }, {} as BiosNamespace);
 };

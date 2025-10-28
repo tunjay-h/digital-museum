@@ -82,7 +82,7 @@ const InfoPanel = () => {
   }
 
   const name = language === 'az' ? president.name_az : president.name_en;
-  const description = language === 'az' ? president.short_desc_az : president.short_desc_en;
+  const description = language === 'az' ? president.description_az : president.description_en;
   const term = formatTerm(president, t);
   const audioSrc = language === 'az' ? president.audio_az : president.audio_en;
   const shareUrl = `${window.location.origin}/hall?p=${president.person_id}`;
