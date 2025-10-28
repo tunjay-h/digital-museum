@@ -4,15 +4,11 @@
     "person_id": "mirgasimov",
     "name_az": "Mir Əsədulla Mirqasımov",
     "name_en": "Mir Asadulla Mirgasimov",
-    "term_start": "1945-03-31",
+    "term_start": "1945",
     "term_end": "1947",
     "image_src": "/images/presidents/mir-asadulla-mirgasimov.png",
-    "short_desc_en": "Azerbaijani surgeon and one of the founders of ANAS; first president of the Academy (1945–1947).",
-    "short_desc_az": "Azərbaycanlı cərrah, AMEA-nın qurucularından biri; Akademiyanın ilk prezidenti (1945–1947).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Renowned surgeon and medical academic who co-founded the Azerbaijan National Academy of Sciences; served as its inaugural president from 1945 to 1947. Mirgasimov oversaw the launch of the first research institutes, expanded medical education, and championed public health reforms in the early post-war years.",
+    "short_desc_az": "Məşhur cərrah və tibb alimi, Azərbaycan Milli Elmlər Akademiyasının həmtəsisçilərindən biri; 1945–1947-ci illərdə ilk prezident kimi fəaliyyət göstərib. Mirqasımov ilk elmi institutların yaradılmasına rəhbərlik edib, tibb təhsilini genişləndirib və müharibədən sonrakı dövrdə səhiyyə islahatlarını dəstəkləyib."
   },
   {
     "order": 2,
@@ -22,27 +18,19 @@
     "term_start": "1947",
     "term_end": "1950",
     "image_src": "/images/presidents/yusif-mammadaliyev.png",
-    "short_desc_en": "Chemist, founder of petroleum chemistry in Azerbaijan; first term as ANAS president (1947–1950).",
-    "short_desc_az": "Kimyaçı, Azərbaycanda neft-kimyasının banilərindən; AMEA prezidentinin birinci müddəti (1947–1950).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Pioneering chemist whose catalytic research shaped Azerbaijan's petroleum chemistry school; served as ANAS president between 1947 and 1950. He organized laboratories devoted to high-octane fuel synthesis, encouraged collaboration with oil enterprises, and mentored a new generation of petrochemical scientists.",
+    "short_desc_az": "Katalitik tədqiqatları Azərbaycan neft-kimya məktəbini formalaşdıran qabaqcıl kimyaçı; 1947–1950-ci illərdə AMEA prezidentliyini icra edib. O, yüksək oktanlı yanacaq sintezinə həsr olunmuş laboratoriyalar qurdu, neft müəssisələri ilə əməkdaşlığı təşviq etdi və yeni petro-kimyaçı nəslini yetişdirdi."
   },
   {
     "order": 3,
     "person_id": "aliyev_musa",
     "name_az": "Musa Əliyev",
     "name_en": "Musa Aliyev",
-    "term_start": "1950-04-01",
+    "term_start": "1950",
     "term_end": "1958",
     "image_src": "/images/presidents/musa-aliyev.jpg",
-    "short_desc_en": "Scientist and organizer who expanded ANAS institutes; supported development of national scientific infrastructure (1950–1958).",
-    "short_desc_az": "Alim və təşkilatçı; AMEA institutlarının genişlənməsini və elmi infrastrukturun inkişafını dəstəklədi (1950–1958).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Geologist and academic organizer who led the Academy from 1950 to 1958 during a phase of rapid industrialization. Aliyev expanded geological survey programs, strengthened regional branches, and promoted applied research to support energy and mining projects.",
+    "short_desc_az": "1950–1958-ci illərdə sürətli sənayeləşmə mərhələsində Akademiyaya rəhbərlik edən geoloq və akademik təşkilatçı. Əliyev geoloji kəşfiyyat proqramlarını genişləndirdi, regional şöbələri möhkəmləndirdi və enerji və mədən layihələrini dəstəkləmək üçün tətbiqi tədqiqatları irəli çəkdi."
   },
   {
     "order": 4,
@@ -50,14 +38,10 @@
     "name_az": "Yusif Məmmədəliyev",
     "name_en": "Yusif Mammadaliyev",
     "term_start": "1958",
-    "term_end": "1961-12-15",
+    "term_end": "1961",
     "image_src": "/images/presidents/yusif-mammadaliyev.png",
-    "short_desc_en": "Chemist and institute founder; second non-consecutive term leading ANAS (1958–1961).",
-    "short_desc_az": "Kimyaçı və institut rəhbəri; AMEA prezidentinin ikinci (qeyri-ardıcıl) müddəti (1958–1961).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Visionary chemist who returned for a second, non-consecutive term from 1958 to 1961 to stabilize the Academy. Mammadaliyev consolidated chemical institutes, fostered international exchange, and advocated for large-scale catalytic research centers.",
+    "short_desc_az": "Görüşlü kimyaçı, Akademiyanı sabitləşdirmək üçün 1958–1961-ci illərdə ikinci, fasiləli müddətə qayıtdı. Məmmədəliyev kimya institutlarını birləşdirdi, beynəlxalq mübadilələri genişləndirdi və böyük katalitik tədqiqat mərkəzlərinin yaradılmasını müdafiə etdi."
   },
   {
     "order": 5,
@@ -67,12 +51,8 @@
     "term_start": "1961",
     "term_end": "1967",
     "image_src": "/images/presidents/zahid-khalilov.jpg",
-    "short_desc_en": "Mathematician, founder of Azerbaijan’s functional analysis school; ANAS president (1961–1967).",
-    "short_desc_az": "Riyaziyyatçı, funksional analiz məktəbinin banisi; AMEA prezidenti (1961–1967).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Mathematician celebrated for founding the Azerbaijani school of functional analysis; led ANAS from 1961 to 1967. Khalilov nurtured theoretical physics and mathematics institutes, published influential textbooks, and promoted academic exchange with Soviet and European centers.",
+    "short_desc_az": "Funksional analiz üzrə Azərbaycan məktəbinin banisi kimi tanınan riyaziyyatçı; 1961–1967-ci illərdə AMEA-ya rəhbərlik edib. Xəlilov nəzəri fizika və riyaziyyat institutlarını inkişaf etdirdi, təsirli dərsliklər nəşr etdirdi və SSRİ və Avropa mərkəzləri ilə elmi mübadiləni gücləndirdi."
   },
   {
     "order": 6,
@@ -82,12 +62,8 @@
     "term_start": "1967",
     "term_end": "1970",
     "image_src": "/images/presidents/rustam-ismayilov.jpg",
-    "short_desc_en": "Engineer and academic leader who headed ANAS during late-1960s modernization (1967–1970).",
-    "short_desc_az": "Mühəndis və akademik rəhbər; 1960-cı illərin sonundakı modernləşmə dövründə AMEA-ya rəhbərlik edib (1967–1970).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Engineer and academic manager who directed the Academy between 1967 and 1970 amid modernization drives. Ismayilov invested in precision instrumentation workshops, encouraged interdisciplinary design bureaus, and supported the training of young engineers.",
+    "short_desc_az": "1967–1970-ci illərdə modernləşmə təşəbbüsləri dövründə Akademiyanı idarə edən mühəndis və elmi təşkilatçı. İsmayılov dəqiqlik avadanlığı emalatxanalarına sərmayə yatırdı, fənlərarası konstruktor bürolarını təşviq etdi və gənc mühəndislərin hazırlanmasını dəstəklədi."
   },
   {
     "order": 7,
@@ -97,12 +73,8 @@
     "term_start": "1970",
     "term_end": "1983",
     "image_src": "/images/presidents/hasan-abdullayev.jpg",
-    "short_desc_en": "Nuclear/solid-state physicist and longest-serving ANAS president (1970–1983); strengthened physics institutions.",
-    "short_desc_az": "Nüvə/bərk cisim fizikası üzrə alim, ən uzun müddət AMEA prezidentliyi etmiş şəxs (1970–1983); fizika institutlarını gücləndirib.",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Prominent nuclear and solid-state physicist who became the Academy's longest-serving president from 1970 to 1983. Abdullayev strengthened physics institutions, founded new semiconductor laboratories, and positioned Azerbaijani science within major Soviet research programs.",
+    "short_desc_az": "Nüvə və bərk cisim fizikası üzrə görkəmli alim, 1970–1983-cü illərdə Akademiyanın ən uzunmüddətli prezidenti olub. Abdullayev fizika institutlarını gücləndirdi, yeni yarımkeçirici laboratoriyaları yaratdı və Azərbaycan elmini əsas sovet tədqiqat proqramlarına daxil etdi."
   },
   {
     "order": 8,
@@ -112,12 +84,8 @@
     "term_start": "1983",
     "term_end": "1997",
     "image_src": "/images/presidents/eldar-salayev.jpg",
-    "short_desc_en": "Physicist; led ANAS through late-Soviet and early independence years, directing the Institute of Physics (1983–1997).",
-    "short_desc_az": "Fizik; gec-Sovet və erkən müstəqillik illərində AMEA-ya rəhbərlik edib; Fizika İnstitutunu idarə edib (1983–1997).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Physicist who guided ANAS from 1983 to 1997 through the late Soviet period and the challenges of independence. Salayev reorganized institutes to cope with funding shifts, supported the Institute of Physics, and launched outreach initiatives connecting science with society.",
+    "short_desc_az": "1983–1997-ci illərdə gec sovet dövrü və müstəqillik çağırışları boyunca AMEA-ya rəhbərlik edən fizik. Salayev maliyyələşmə dəyişikliklərinə uyğunlaşmaq üçün institutları yenidən təşkil etdi, Fizika İnstitutunu dəstəklədi və elmi cəmiyyətlə bağlamaq üçün maarifləndirmə təşəbbüsləri başlatdı."
   },
   {
     "order": 9,
@@ -127,12 +95,8 @@
     "term_start": "1997",
     "term_end": "2000",
     "image_src": "/images/presidents/faramaz-magsudov.png",
-    "short_desc_en": "Mathematician and academic organizer who guided ANAS through a difficult transition period (1997–2000).",
-    "short_desc_az": "Riyaziyyatçı və təşkilatçı; çətin keçid dövründə AMEA-nı idarə edib (1997–2000).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Mathematician and academic organizer who steered the Academy during the turbulent transition of 1997–2000. Magsudov prioritized restoring laboratories, forged ties with newly formed universities, and secured state backing for fundamental science.",
+    "short_desc_az": "1997–2000-ci illərin çətin keçid dövründə Akademiyanı yönləndirən riyaziyyatçı və elmi təşkilatçı. Maqsudov laboratoriyaların bərpasını prioritetləşdirdi, yeni yaranmış universitetlərlə əlaqələr qurdu və fundamental elm üçün dövlət dəstəyini təmin etdi."
   },
   {
     "order": 10,
@@ -140,58 +104,42 @@
     "name_az": "Mahmud Kərimov",
     "name_en": "Mahmud Karimov",
     "term_start": "2001",
-    "term_end": "2013-02-10",
+    "term_end": "2013",
     "image_src": "/images/presidents/mahmud-karimov.jpg",
-    "short_desc_en": "Physicist; advanced radiation physics and radioecology research; ANAS president (2001–2013).",
-    "short_desc_az": "Fizik; radiasiya fizikası və radioekologiya üzrə tədqiqatları inkişaf etdirib; AMEA prezidenti (2001–2013).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Physicist specializing in radiation physics and radioecology who served as president from 2001 to 2013. Karimov broadened international cooperation, launched national monitoring projects on environmental safety, and promoted innovation partnerships.",
+    "short_desc_az": "Radiasiya fizikası və radioekologiya üzrə ixtisaslaşmış fizik, 2001–2013-cü illərdə prezident olub. Kərimov beynəlxalq əməkdaşlığı genişləndirdi, ətraf mühit təhlükəsizliyi üzrə milli monitorinq layihələrinə start verdi və innovasiya tərəfdaşlıqlarını təşviq etdi."
   },
   {
     "order": 11,
     "person_id": "elizade",
     "name_az": "Akif Əlizadə",
     "name_en": "Akif Alizadeh",
-    "term_start": "2013-04-25",
-    "term_end": "2019-10-22",
+    "term_start": "2013",
+    "term_end": "2019",
     "image_src": "/images/presidents/akif-alizadeh.jpg",
-    "short_desc_en": "Geologist and stratigrapher; longtime director at the Institute of Geology; ANAS president (2013–2019).",
-    "short_desc_az": "Geoloq və stratigraf; Geologiya İnstitutunda uzun illər rəhbər; AMEA prezidenti (2013–2019).",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Geologist and stratigrapher who had long directed the Institute of Geology before leading ANAS from 2013 to 2019. Alizadeh advanced earth science mapping programs, promoted Caspian basin research, and advocated for modern digital archives across the Academy.",
+    "short_desc_az": "Geoloq və stratigraf, uzun illər Geologiya İnstitutuna rəhbərlik etdikdən sonra 2013–2019-cu illərdə AMEA prezidentliyini icra edib. Əlizadə yer elmləri xəritələşdirmə proqramlarını inkişaf etdirdi, Xəzər hövzəsi üzrə tədqiqatları irəli çəkdi və Akademiya üzrə müasir rəqəmsal arxivlərin qurulmasını müdafiə etdi."
   },
   {
     "order": 12,
     "person_id": "mehdiyev",
     "name_az": "Ramiz Mehdiyev",
     "name_en": "Ramiz Mehdiyev",
-    "term_start": "2019-10-23",
-    "term_end": "2022-02-14",
+    "term_start": "2019",
+    "term_end": "2022",
     "image_src": "/images/presidents/ramiz-mehdiyev.jpg",
-    "short_desc_en": "Political scientist and longtime state official; served as ANAS president from 2019 to 2022.",
-    "short_desc_az": "Siyasi elmlər üzrə alim və uzunmüddətli dövlət xadimi; 2019–2022-ci illərdə AMEA prezidenti.",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Political scientist and longtime state official who headed the Academy between 2019 and 2022. Mehdiyev focused on administrative reforms, updating charter documents, and aligning Academy research agendas with national development strategies.",
+    "short_desc_az": "Siyasi elmlər üzrə alim və uzunmüddətli dövlət xadimi, 2019–2022-ci illərdə Akademiyaya rəhbərlik edib. Mehdiyev idarəetmə islahatlarına, nizamnamə sənədlərinin yenilənməsinə və Akademiyanın tədqiqat gündəliyinin milli inkişaf strategiyaları ilə uyğunlaşdırılmasına diqqət yetirdi."
   },
   {
     "order": 13,
     "person_id": "habibbayli",
     "name_az": "İsa Həbibbəyli",
     "name_en": "Isa Habibbayli",
-    "term_start": "2022-10-25",
+    "term_start": "2022",
     "term_end": "present",
     "image_src": "/images/presidents/isa-habibbayli.png",
-    "short_desc_en": "Literary scholar and academic leader; Director-General of the Nizami Ganjavi Institute of Literature; ANAS president since Oct 2022.",
-    "short_desc_az": "Ədəbiyyatşünas və akademik rəhbər; Nizami Gəncəvi adına Ədəbiyyat İnstitutunun baş direktoru; 2022-ci ildən AMEA prezidenti.",
-    "sources": [
-      "wikipedia",
-      "science.gov.az"
-    ]
+    "short_desc_en": "Literary scholar and academic leader who has served as president since 2022. Habibbayli directs the Nizami Ganjavi Institute of Literature, supports humanities digitization projects, and emphasizes public engagement with Azerbaijan's cultural heritage.",
+    "short_desc_az": "2022-ci ildən prezident kimi fəaliyyət göstərən ədəbiyyatşünas və akademik rəhbər. Həbibbəyli Nizami Gəncəvi adına Ədəbiyyat İnstitutuna rəhbərlik edir, humanitar sahədə rəqəmsallaşma layihələrini dəstəkləyir və Azərbaycan mədəni irsi ilə ictimai əlaqəni önə çəkir."
   }
 ]

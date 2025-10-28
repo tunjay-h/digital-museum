@@ -61,7 +61,14 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
         zIndex: 30,
       }}
     >
-      <header style={{ display: 'flex', justifyContent: 'space-between', gap: '1.5rem' }}>
+      <header
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: '1.5rem',
+          alignItems: 'flex-start',
+        }}
+      >
         <div>
           <h2 style={{ margin: 0 }}>{t('museum:overlay.title')}</h2>
           <p style={{ margin: '0.35rem 0 0', opacity: 0.7 }}>{t('museum:overlay.subtitle')}</p>
@@ -69,8 +76,11 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
             {t('pressHToOpenOverlay')}
           </p>
         </div>
-        <div style={{ alignSelf: 'flex-start' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'flex-end' }}>
           <LanguageSwitch />
+          <button className="ghost" onClick={() => toggleOverlay(false)}>
+            {t('close')}
+          </button>
         </div>
       </header>
 
@@ -169,12 +179,6 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
           </p>
         </div>
       </section>
-
-      <footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <button className="ghost" onClick={() => toggleOverlay(false)}>
-          {t('close')}
-        </button>
-      </footer>
     </div>,
     document.getElementById('root')!,
   );

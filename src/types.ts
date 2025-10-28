@@ -12,7 +12,6 @@ export interface President {
   audio_en?: string;
   tts_text_en?: string;
   tts_text_az?: string;
-  sources: string[];
 }
 
 export interface FramePlacement {

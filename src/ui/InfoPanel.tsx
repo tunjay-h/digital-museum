@@ -1,19 +1,27 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
+import type { TFunction } from 'i18next';
 import presidents from '../data/presidents';
 import { useMuseumStore } from '../store/useMuseumStore';
 import type { President } from '../types';
 
 const panelRoot = () => document.getElementById('root');
 
-const formatTerm = (president: President, language: 'az' | 'en') => {
-  if (president.term_end.toLowerCase() === 'present') {
-    return language === 'az'
-      ? `${president.term_start} — ${president.term_end}`
-      : `${president.term_start} — ${president.term_end}`;
+const extractYear = (value: string) => {
+  const match = value.match(/\d{4}/);
+  return match ? match[0] : value;
+};
+
+const formatTerm = (president: President, t: TFunction) => {
+  const start = extractYear(president.term_start);
+  const endValue = president.term_end.toLowerCase();
+
+  if (endValue === 'present') {
+    return `${start} — ${t('museum:info.termPresent')}`;
   }
-  return `${president.term_start} — ${president.term_end}`;
+
+  return `${start} — ${extractYear(president.term_end)}`;
 };
 
 const InfoPanel = () => {
@@ -75,7 +83,7 @@ const InfoPanel = () => {
 
   const name = language === 'az' ? president.name_az : president.name_en;
   const description = language === 'az' ? president.short_desc_az : president.short_desc_en;
-  const term = formatTerm(president, language);
+  const term = formatTerm(president, t);
   const audioSrc = language === 'az' ? president.audio_az : president.audio_en;
   const shareUrl = `${window.location.origin}/hall?p=${president.person_id}`;
 
@@ -138,23 +146,6 @@ const InfoPanel = () => {
         <div>
           <h3 style={{ margin: 0, fontSize: isCompactLayout ? '1.5rem' : '1.8rem' }}>{name}</h3>
           <p style={{ opacity: 0.7, fontSize: isCompactLayout ? '0.9rem' : '0.95rem' }}>{description}</p>
-        </div>
-        <div>
-          <span
-            style={{
-              display: 'block',
-              marginBottom: '0.35rem',
-              fontSize: isCompactLayout ? '0.8rem' : '0.85rem',
-              opacity: 0.6,
-            }}
-          >
-            {t('ui:sources')}
-          </span>
-          <ul style={{ margin: 0, paddingLeft: '1.1rem', opacity: 0.7 }}>
-            {president.sources.map((source) => (
-              <li key={source}>{source}</li>
-            ))}
-          </ul>
         </div>
         <div className="hud-panel" style={{ padding: isCompactLayout ? '0.85rem' : '1rem' }}>
           <span style={{ display: 'block', marginBottom: '0.5rem', opacity: 0.6 }}>{t('audio')}</span>
