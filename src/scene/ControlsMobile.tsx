@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { MathUtils, Vector3 } from 'three';
+import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
 
@@ -11,7 +11,6 @@ const ControlsMobile = () => {
   const settings = useMuseumStore((state) => state.settings);
   const mobileMove = useMuseumStore((state) => state.mobileMove);
   const mobileLook = useMuseumStore((state) => state.mobileLook);
-  const setMobileLook = useMuseumStore((state) => state.setMobileLook);
   const bobPhase = useRef(0);
   const yaw = useRef(0);
   const pitch = useRef(0);
@@ -26,23 +25,9 @@ const ControlsMobile = () => {
 
   useFrame((_, delta) => {
     const sensitivity = settings.lookSensitivity * 1.2;
-    const yawRateLimit = Math.PI; // ~180deg/s
-    const lookScale = 8;
-
-    const yawRate = clamp(mobileLook.x * sensitivity * lookScale, -yawRateLimit, yawRateLimit);
-    const pitchRate = mobileLook.y * sensitivity * lookScale;
-
-    yaw.current -= yawRate * delta;
-    pitch.current -= pitchRate * delta;
-    pitch.current = clamp(
-      pitch.current,
-      MathUtils.degToRad(-60),
-      MathUtils.degToRad(45),
-    );
-
-    if (mobileLook.x !== 0 || mobileLook.y !== 0) {
-      setMobileLook({ x: 0, y: 0 });
-    }
+    yaw.current -= mobileLook.x * sensitivity * delta * 2.2;
+    pitch.current -= mobileLook.y * sensitivity * delta * 1.6;
+    pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
 
     camera.rotation.set(pitch.current, yaw.current, 0);
 
