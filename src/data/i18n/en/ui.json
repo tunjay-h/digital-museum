@@ -45,6 +45,7 @@
   "loadingPercent": "Loading %{value}%",
   "toggleHelp": "Toggle help overlay",
   "pressHToOpenOverlay": "Press H to close this overlay and capture the pointer. Press H again anytime to reopen it.",
+  "pressHForHelp": "Press H for help",
   "sprint": "Sprint",
   "focus": "Focus nearest portrait",
   "togglePointer": "Lock/unlock pointer",

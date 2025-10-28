@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useProgress } from '@react-three/drei';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitch from './LanguageSwitch';
 import { useMuseumStore } from '../store/useMuseumStore';
@@ -11,17 +10,10 @@ interface MuseumOverlayProps {
 
 const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
   const { t } = useTranslation(['ui', 'museum']);
-  const { active, progress } = useProgress();
   const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
   const toggleOverlay = useMuseumStore((state) => state.toggleOverlay);
   const settings = useMuseumStore((state) => state.settings);
   const updateSettings = useMuseumStore((state) => state.updateSettings);
-
-  useEffect(() => {
-    if (active && !isOverlayOpen) {
-      toggleOverlay(true);
-    }
-  }, [active, isOverlayOpen, toggleOverlay]);
 
   useEffect(() => {
     if (!isOverlayOpen) return;
@@ -81,33 +73,6 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
           <LanguageSwitch />
         </div>
       </header>
-
-      {(active || progress < 100) && (
-        <div>
-          <span style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
-            {t('loadingPercent', { value: progress.toFixed(0) })}
-          </span>
-          <div
-            style={{
-              width: '100%',
-              maxWidth: '420px',
-              height: '6px',
-              background: 'rgba(255,255,255,0.08)',
-              borderRadius: '999px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                width: `${Math.min(100, Math.round(progress))}%`,
-                height: '100%',
-                background: 'linear-gradient(90deg, #b68845, #f5d38b)',
-                transition: 'width 0.3s ease',
-              }}
-            />
-          </div>
-        </div>
-      )}
 
       <section
         style={{

@@ -8,6 +8,7 @@ import MobileOrientationPrompt from '../ui/MobileOrientationPrompt';
 import MobileControlsOverlay from '../ui/MobileControlsOverlay';
 import FallbackGallery from '../ui/FallbackGallery';
 import MuseumOverlay from '../ui/MuseumOverlay';
+import LoadingOverlay from '../ui/LoadingOverlay';
 import { isMobileLandscapeRequired, isTouchDevice } from '../lib/device';
 import { isWebGLSupported } from '../lib/webgl';
 import { useMuseumStore } from '../store/useMuseumStore';
@@ -25,17 +26,10 @@ const Hall = () => {
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
   const closeInfoPanel = useMuseumStore((state) => state.closeInfoPanel);
   const toggleOverlay = useMuseumStore((state) => state.toggleOverlay);
-  const hasSeenOverlay = useMuseumStore((state) => state.hasSeenOverlay);
 
   useEffect(() => {
     document.title = `${t('appTitle')} — Hallway`;
   }, [t]);
-
-  useEffect(() => {
-    if (!hasSeenOverlay) {
-      toggleOverlay(true);
-    }
-  }, [hasSeenOverlay, toggleOverlay]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
@@ -100,6 +94,7 @@ const Hall = () => {
   return (
     <div style={{ position: 'relative', height: '100%', width: '100%' }}>
       {webglSupported && <MuseumScene isMobile={isMobile} />}
+      <LoadingOverlay />
       <HUD isMobile={isMobile} />
       <InfoPanel />
       <MuseumOverlay isMobile={isMobile} />

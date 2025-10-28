@@ -16,7 +16,6 @@ interface MuseumState {
   selectedPortraitId: string | null;
   focusCandidateId: string | null;
   isOverlayOpen: boolean;
-  hasSeenOverlay: boolean;
   language: SupportedLocale;
   currentPath: string;
   settings: MuseumSettings;
@@ -45,8 +44,7 @@ export const useMuseumStore = create<MuseumState>((set) => ({
   isInfoPanelOpen: false,
   selectedPortraitId: null,
   focusCandidateId: null,
-  isOverlayOpen: true,
-  hasSeenOverlay: false,
+  isOverlayOpen: false,
   language: 'az',
   currentPath: '/',
   settings: {
@@ -72,15 +70,19 @@ export const useMuseumStore = create<MuseumState>((set) => ({
     set({ isInfoPanelOpen: false, selectedPortraitId: null }),
   toggleOverlay: (value) =>
     set((state) => {
-      const isOverlayOpen = value ?? !state.isOverlayOpen;
+      const nextIsOpen = value ?? !state.isOverlayOpen;
 
-      if (isOverlayOpen) {
+      if (nextIsOpen === state.isOverlayOpen) {
+        return {};
+      }
+
+      if (nextIsOpen) {
         state.pointerLock.unlock?.();
-        return { isOverlayOpen };
+        return { isOverlayOpen: true };
       }
 
       state.pointerLock.lock?.();
-      return { isOverlayOpen, hasSeenOverlay: true };
+      return { isOverlayOpen: false };
     }),
   setLanguage: (locale) => set({ language: locale }),
   setCurrentPath: (path) => set({ currentPath: path }),

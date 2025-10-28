@@ -37,6 +37,7 @@ const HUD = ({ isMobile }: HUDProps) => {
           <p style={{ margin: 0, marginTop: '0.35rem', opacity: 0.65, fontSize: '0.9rem' }}>
             {t('museum:hud.subtitle')}
           </p>
+          <p style={{ margin: '0.75rem 0 0', opacity: 0.55, fontSize: '0.85rem' }}>{t('pressHForHelp')}</p>
         </div>
         <div style={{ pointerEvents: 'none' }} />
       </header>
