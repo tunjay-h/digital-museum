@@ -43,7 +43,7 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
         t('museum:help.desktop.look'),
         t('museum:help.desktop.focus'),
         t('museum:help.desktop.sprint'),
-        t('togglePointer'),
+        t('museum:help.desktop.unlock'),
       ]
     : [
         t('museum:help.mobile.joystick'),
@@ -66,12 +66,13 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
         display: 'flex',
         flexDirection: 'column',
         gap: '2rem',
+        zIndex: 30,
       }}
     >
       <header style={{ display: 'flex', justifyContent: 'space-between', gap: '1.5rem' }}>
         <div>
-          <h2 style={{ margin: 0 }}>{t('museum:hud.title')}</h2>
-          <p style={{ margin: '0.35rem 0 0', opacity: 0.7 }}>{t('museum:hud.subtitle')}</p>
+          <h2 style={{ margin: 0 }}>{t('museum:overlay.title')}</h2>
+          <p style={{ margin: '0.35rem 0 0', opacity: 0.7 }}>{t('museum:overlay.subtitle')}</p>
           <p style={{ margin: '1rem 0 0', fontSize: '0.85rem', opacity: 0.65 }}>
             {t('pressHToOpenOverlay')}
           </p>
@@ -81,7 +82,7 @@ const MuseumOverlay = ({ isMobile }: MuseumOverlayProps) => {
         </div>
       </header>
 
-      {active && (
+      {(active || progress < 100) && (
         <div>
           <span style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem' }}>
             {t('loadingPercent', { value: progress.toFixed(0) })}

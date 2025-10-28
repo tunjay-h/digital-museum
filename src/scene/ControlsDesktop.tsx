@@ -154,7 +154,7 @@ const ControlsDesktop = () => {
     <PointerLockControls
       ref={controlsRef}
       makeDefault
-      selector="#root"
+      selector="#museum-canvas"
       pointerSpeed={settings.lookSensitivity}
     />
   );

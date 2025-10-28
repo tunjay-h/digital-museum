@@ -3,6 +3,10 @@
     "title": "Presidential gallery",
     "subtitle": "A digital corridor inspired by the Ismailiyya Palace"
   },
+  "overlay": {
+    "title": "Controls & settings",
+    "subtitle": "Tune your experience and learn how to explore the hall"
+  },
   "help": {
     "desktop": {
       "title": "Desktop controls",

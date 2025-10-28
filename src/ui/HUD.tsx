@@ -13,6 +13,7 @@ const HUD = ({ isMobile }: HUDProps) => {
   const selectedPortraitId = useMuseumStore((state) => state.selectedPortraitId);
   const settings = useMuseumStore((state) => state.settings);
   const language = useMuseumStore((state) => state.language);
+  const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
 
   const focusEntry = useMemo(() => {
     return presidents.find((president) => president.person_id === focusCandidateId) ?? null;
@@ -40,7 +41,7 @@ const HUD = ({ isMobile }: HUDProps) => {
         <div style={{ pointerEvents: 'none' }} />
       </header>
       <div style={{ alignSelf: 'center' }}>
-        {settings.showCrosshair && (
+        {settings.showCrosshair && !isOverlayOpen && (
           <div
             style={{
               width: '18px',
@@ -52,7 +53,10 @@ const HUD = ({ isMobile }: HUDProps) => {
             }}
           />
         )}
-        {!isMobile && focusEntry && !selectedPortraitId && (
+        {!isMobile &&
+          focusEntry &&
+          !selectedPortraitId &&
+          !isOverlayOpen && (
           <div
             className="hud-panel"
             style={{

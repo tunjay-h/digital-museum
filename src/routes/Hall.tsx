@@ -25,10 +25,17 @@ const Hall = () => {
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
   const closeInfoPanel = useMuseumStore((state) => state.closeInfoPanel);
   const toggleOverlay = useMuseumStore((state) => state.toggleOverlay);
+  const hasSeenOverlay = useMuseumStore((state) => state.hasSeenOverlay);
 
   useEffect(() => {
     document.title = `${t('appTitle')} — Hallway`;
   }, [t]);
+
+  useEffect(() => {
+    if (!hasSeenOverlay) {
+      toggleOverlay(true);
+    }
+  }, [hasSeenOverlay, toggleOverlay]);
 
   useEffect(() => {
     const handleKey = (event: KeyboardEvent) => {
