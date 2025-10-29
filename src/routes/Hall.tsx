@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import MuseumScene from '../scene/MuseumScene';
 import HUD from '../ui/HUD';
@@ -16,6 +16,7 @@ import presidents from '../data/presidents';
 
 const Hall = () => {
   const location = useLocation();
+  const { id } = useParams<{ id?: string }>();
   const navigate = useNavigate();
   const { t } = useTranslation('ui');
   const [webglSupported, setWebglSupported] = useState<boolean | null>(null);
@@ -67,25 +68,29 @@ const Hall = () => {
   }, [isMobile]);
 
   useEffect(() => {
+    if (!location.search) return;
     const params = new URLSearchParams(location.search);
-    const portraitId = params.get('p');
-    if (portraitId) {
-      const exists = presidents.some((president) => president.person_id === portraitId);
-      if (exists) {
-        openInfoPanel(portraitId);
-      } else {
-        closeInfoPanel();
-      }
-    } else {
-      closeInfoPanel();
+    const legacyPortraitId = params.get('p');
+    if (legacyPortraitId) {
+      navigate(`/hall/art/${legacyPortraitId}`, { replace: true });
     }
-  }, [closeInfoPanel, location.search, openInfoPanel]);
+  }, [location.search, navigate]);
 
   useEffect(() => {
-    if (location.pathname !== '/hall') {
-      navigate('/hall', { replace: true });
+    if (!id) {
+      closeInfoPanel();
+      return;
     }
-  }, [location.pathname, navigate]);
+
+    const exists = presidents.some((president) => president.person_id === id);
+    if (exists) {
+      openInfoPanel(id);
+      return;
+    }
+
+    closeInfoPanel();
+    navigate('/hall', { replace: true });
+  }, [closeInfoPanel, id, navigate, openInfoPanel]);
 
   if (webglSupported === false) {
     return <FallbackGallery />;

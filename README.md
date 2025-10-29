@@ -6,7 +6,7 @@ This project implements the MVP hallway experience for the Azerbaijan National A
 
 - **Interactive hallway** with 13 framed portraits (6 left, 6 right, 1 end wall) sourced from official ANAS references.
 - **Localized UI (AZ/EN)** powered by i18next; Azerbaijani is the default locale with real-time switching.
-- **Info panels** featuring bilingual biographies, source attribution, shareable deep links (`?p=person_id`), and audio controls that gracefully handle yet-to-be-added recordings.
+- **Info panels** featuring bilingual biographies, source attribution, shareable deep links (`/hall/art/{person_id}`), and audio controls that gracefully handle yet-to-be-added recordings.
 - **Settings & accessibility**: adjustable look sensitivity, master volume, “reduce effects” performance mode, camera bob toggle, and optional crosshair for motion comfort.
 - **Desktop & mobile navigation**: WASD/Shift/F pointer-lock controls on desktop, dual virtual joysticks on mobile, and a landscape-only prompt for touch devices.
 - **Graceful fallbacks**: detects WebGL support and, when unavailable, renders an accessible 2D portrait gallery with identical content.

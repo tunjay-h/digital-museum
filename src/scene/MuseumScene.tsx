@@ -9,6 +9,7 @@ import { PlacementsProvider } from './PlacementsContext';
 import FocusManager from './FocusManager';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT } from './constants';
+import CameraDirector from './CameraDirector';
 
 interface MuseumSceneProps {
   isMobile: boolean;
@@ -59,6 +60,7 @@ const MuseumScene = ({ isMobile }: MuseumSceneProps) => {
         <PlacementsProvider>
           <HallLayout />
           <FocusManager />
+          <CameraDirector />
         </PlacementsProvider>
       </Suspense>
       {isMobile ? <ControlsMobile /> : <ControlsDesktop />}

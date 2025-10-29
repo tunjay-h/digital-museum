@@ -26,6 +26,7 @@ const AppRoutes = () => {
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/hall" element={<Hall />} />
+        <Route path="/hall/art/:id" element={<Hall />} />
       </Routes>
     </Suspense>
   );
