@@ -60,10 +60,10 @@ const MuseumScene = ({ isMobile }: MuseumSceneProps) => {
         <PlacementsProvider>
           <HallLayout />
           <FocusManager />
+          <CameraDirector />
         </PlacementsProvider>
       </Suspense>
       {isMobile ? <ControlsMobile /> : <ControlsDesktop />}
-      <CameraDirector />
       <Preload all />
     </Canvas>
   );
