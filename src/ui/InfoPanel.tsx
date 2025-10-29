@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
 import presidents from '../data/presidents';
@@ -34,6 +35,8 @@ const InfoPanel = () => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isCompactLayout, setIsCompactLayout] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const president = useMemo(
     () => presidents.find((entry) => entry.person_id === selectedPortraitId),
@@ -50,16 +53,23 @@ const InfoPanel = () => {
     }
   }, [isOpen]);
 
+  const handleClose = useCallback(() => {
+    closeInfoPanel();
+    if (location.pathname.startsWith('/hall/art/')) {
+      navigate('/hall', { replace: true });
+    }
+  }, [closeInfoPanel, location.pathname, navigate]);
+
   useEffect(() => {
     if (!isOpen) return;
     const handler = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
-        closeInfoPanel();
+        handleClose();
       }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [closeInfoPanel, isOpen]);
+  }, [handleClose, isOpen]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -77,6 +87,17 @@ const InfoPanel = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!isOpen || !president) return;
+
+    const targetPath = `/hall/art/${president.person_id}`;
+    if (location.pathname !== targetPath) {
+      navigate(targetPath, {
+        replace: location.pathname.startsWith('/hall/art/'),
+      });
+    }
+  }, [isOpen, location.pathname, navigate, president]);
+
   if (!isOpen || !president) {
     return null;
   }
@@ -85,7 +106,7 @@ const InfoPanel = () => {
   const description = language === 'az' ? president.description_az : president.description_en;
   const term = formatTerm(president, t);
   const audioSrc = language === 'az' ? president.audio_az : president.audio_en;
-  const shareUrl = `${window.location.origin}/hall?p=${president.person_id}`;
+  const shareUrl = `${window.location.origin}/hall/art/${president.person_id}`;
 
   const handleCopy = async () => {
     try {
@@ -125,7 +146,7 @@ const InfoPanel = () => {
     >
       <button
         className="ghost"
-        onClick={closeInfoPanel}
+        onClick={handleClose}
         style={{ position: 'absolute', right: '1.25rem', top: '1.25rem' }}
       >
         {t('close')}
