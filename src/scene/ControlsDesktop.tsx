@@ -1,10 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { PointerLockControls } from '@react-three/drei';
+import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
-import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -18,31 +16,23 @@ const ControlsDesktop = () => {
   const setPointerLockHandlers = useMuseumStore((state) => state.setPointerLockHandlers);
   const focusCandidateId = useMuseumStore((state) => state.focusCandidateId);
   const focusRef = useRef<string | null>(focusCandidateId);
-  const controlsRef = useRef<PointerLockControlsImpl | null>(null);
-  const [isPointerLocked, setIsPointerLocked] = useState(false);
-  const cursorOverlayRef = useRef<HTMLDivElement | null>(null);
-  const cursorDotRef = useRef<HTMLDivElement | null>(null);
-  const cursorPositionRef = useRef({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
-    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
+  const yaw = useRef(0);
+  const pitch = useRef(0);
+  const lookState = useRef<{
+    active: boolean;
+    pending: boolean;
+    blockContextMenu: boolean;
+    pointerId: number | null;
+    lastX: number;
+    lastY: number;
+  }>({
+    active: false,
+    pending: false,
+    blockContextMenu: false,
+    pointerId: null,
+    lastX: 0,
+    lastY: 0,
   });
-
-  const applyCursorPosition = useCallback(() => {
-    const cursor = cursorDotRef.current;
-    if (!cursor) return;
-    const { x, y } = cursorPositionRef.current;
-    cursor.style.left = `${x}px`;
-    cursor.style.top = `${y}px`;
-  }, []);
-
-  const setCursorPosition = useCallback(
-    (x: number, y: number) => {
-      cursorPositionRef.current.x = clamp(x, 0, window.innerWidth);
-      cursorPositionRef.current.y = clamp(y, 0, window.innerHeight);
-      applyCursorPosition();
-    },
-    [applyCursorPosition],
-  );
 
   useEffect(() => {
     focusRef.current = focusCandidateId;
@@ -119,113 +109,120 @@ const ControlsDesktop = () => {
 
   useEffect(() => {
     camera.position.set(0, CAMERA_EYE_HEIGHT, 2.8);
-    camera.rotation.set(0, 0, 0);
+    yaw.current = camera.rotation.y;
+    pitch.current = camera.rotation.x;
   }, [camera]);
 
   useEffect(() => {
-    setPointerLockHandlers({
-      lock: () => controlsRef.current?.lock(),
-      unlock: () => controlsRef.current?.unlock(),
-    });
+    setPointerLockHandlers({ lock: null, unlock: null });
     return () => {
       setPointerLockHandlers({ lock: null, unlock: null });
     };
   }, [setPointerLockHandlers]);
 
   useEffect(() => {
-    const controls = controlsRef.current;
-    if (!controls) return;
+    const canvas = document.getElementById('museum-canvas');
+    if (!canvas) return;
 
-    const handleLock = () => {
-      setIsPointerLocked(true);
-      setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
-    };
-
-    const handleUnlock = () => {
-      setIsPointerLocked(false);
-    };
-
-    controls.addEventListener('lock', handleLock);
-    controls.addEventListener('unlock', handleUnlock);
-
-    return () => {
-      controls.removeEventListener('lock', handleLock);
-      controls.removeEventListener('unlock', handleUnlock);
-    };
-  }, [setCursorPosition]);
-
-  useEffect(() => {
-    if (typeof document === 'undefined') return;
-    const overlay = document.createElement('div');
-    overlay.style.position = 'fixed';
-    overlay.style.left = '0';
-    overlay.style.top = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.pointerEvents = 'none';
-    overlay.style.zIndex = '9999';
-    overlay.style.display = 'none';
-
-    const cursor = document.createElement('div');
-    cursor.style.position = 'absolute';
-    cursor.style.width = '18px';
-    cursor.style.height = '18px';
-    cursor.style.borderRadius = '999px';
-    cursor.style.border = '2px solid rgba(232, 200, 140, 0.9)';
-    cursor.style.background = 'rgba(232, 200, 140, 0.15)';
-    cursor.style.boxShadow = '0 0 8px rgba(232, 200, 140, 0.45)';
-    cursor.style.transform = 'translate(-50%, -50%)';
-
-    overlay.appendChild(cursor);
-    document.body.appendChild(overlay);
-
-    cursorOverlayRef.current = overlay;
-    cursorDotRef.current = cursor;
-    setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
-
-    return () => {
-      cursorOverlayRef.current = null;
-      cursorDotRef.current = null;
-      overlay.remove();
-    };
-  }, [setCursorPosition]);
-
-  useEffect(() => {
-    const overlay = cursorOverlayRef.current;
-    if (!overlay) return;
-    overlay.style.display = isPointerLocked ? 'block' : 'none';
-  }, [isPointerLocked]);
-
-  useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      if (isPointerLocked) {
-        setCursorPosition(
-          cursorPositionRef.current.x + event.movementX,
-          cursorPositionRef.current.y + event.movementY,
-        );
-      } else {
-        setCursorPosition(event.clientX, event.clientY);
+    const handlePointerDown = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      if (event.button !== 0 && event.button !== 2) return;
+      lookState.current.pointerId = event.pointerId;
+      lookState.current.lastX = event.clientX;
+      lookState.current.lastY = event.clientY;
+      lookState.current.pending = event.button === 0;
+      lookState.current.active = event.button === 2;
+      lookState.current.blockContextMenu = event.button === 2;
+      if (event.button === 2) {
+        canvas.setPointerCapture(event.pointerId);
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, [isPointerLocked, setCursorPosition]);
+    const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      if (lookState.current.pointerId !== event.pointerId) return;
 
-  useEffect(() => {
-    if (!isPointerLocked) return;
-    const handleResize = () => {
-      setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
+      const deltaX = event.clientX - lookState.current.lastX;
+      const deltaY = event.clientY - lookState.current.lastY;
+      lookState.current.lastX = event.clientX;
+      lookState.current.lastY = event.clientY;
+
+      if (!lookState.current.active) {
+        if (!lookState.current.pending) return;
+        if (Math.abs(deltaX) < 2 && Math.abs(deltaY) < 2) {
+          return;
+        }
+        lookState.current.active = true;
+        lookState.current.pending = false;
+        canvas.setPointerCapture(event.pointerId);
+      }
+
+      const sensitivity = settings.lookSensitivity * 0.0022;
+      yaw.current -= deltaX * sensitivity;
+      pitch.current -= deltaY * sensitivity;
+      pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
+
+      camera.rotation.set(pitch.current, yaw.current, 0);
     };
-    window.addEventListener('resize', handleResize);
+
+    const releasePointer = (event: PointerEvent) => {
+      if (canvas.hasPointerCapture(event.pointerId)) {
+        canvas.releasePointerCapture(event.pointerId);
+      }
+    };
+
+    const handlePointerUp = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      if (lookState.current.pointerId !== event.pointerId) return;
+      lookState.current.active = false;
+      lookState.current.pending = false;
+      lookState.current.blockContextMenu = false;
+      lookState.current.pointerId = null;
+      releasePointer(event);
+    };
+
+    const handlePointerLeave = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      if (lookState.current.pointerId !== event.pointerId) return;
+      lookState.current.active = false;
+      lookState.current.pending = false;
+      lookState.current.blockContextMenu = false;
+      lookState.current.pointerId = null;
+      releasePointer(event);
+    };
+
+    const handleContextMenu = (event: MouseEvent) => {
+      if (lookState.current.active || lookState.current.blockContextMenu) {
+        event.preventDefault();
+        lookState.current.blockContextMenu = false;
+      }
+    };
+
+    canvas.addEventListener('pointerdown', handlePointerDown);
+    canvas.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerup', handlePointerUp);
+    canvas.addEventListener('pointercancel', handlePointerUp);
+    canvas.addEventListener('pointerleave', handlePointerLeave);
+    canvas.addEventListener('contextmenu', handleContextMenu);
+
     return () => {
-      window.removeEventListener('resize', handleResize);
+      canvas.removeEventListener('pointerdown', handlePointerDown);
+      canvas.removeEventListener('pointermove', handlePointerMove);
+      canvas.removeEventListener('pointerup', handlePointerUp);
+      canvas.removeEventListener('pointercancel', handlePointerUp);
+      canvas.removeEventListener('pointerleave', handlePointerLeave);
+      canvas.removeEventListener('contextmenu', handleContextMenu);
     };
-  }, [isPointerLocked, setCursorPosition]);
+  }, [camera, settings.lookSensitivity]);
 
   useFrame((_, delta) => {
+    if (!lookState.current.active) {
+      yaw.current = camera.rotation.y;
+      pitch.current = camera.rotation.x;
+    } else {
+      camera.rotation.set(pitch.current, yaw.current, 0);
+    }
+
     const speed = movement.current.sprint ? 20 : 15;
     const acceleration = speed * delta * 2.6;
     const damping = Math.pow(0.88, delta * 60);
@@ -267,14 +264,7 @@ const ControlsDesktop = () => {
     }
   });
 
-  return (
-    <PointerLockControls
-      ref={controlsRef}
-      makeDefault
-      selector="#museum-canvas"
-      pointerSpeed={settings.lookSensitivity}
-    />
-  );
+  return null;
 };
 
 export default ControlsDesktop;
