@@ -1,10 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
 import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
+import { createPortal } from 'react-dom';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -19,6 +20,11 @@ const ControlsDesktop = () => {
   const focusCandidateId = useMuseumStore((state) => state.focusCandidateId);
   const focusRef = useRef<string | null>(focusCandidateId);
   const controlsRef = useRef<PointerLockControlsImpl | null>(null);
+  const [isPointerLocked, setIsPointerLocked] = useState(false);
+  const [cursorPosition, setCursorPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
+    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
+  }));
 
   useEffect(() => {
     focusRef.current = focusCandidateId;
@@ -108,6 +114,60 @@ const ControlsDesktop = () => {
     };
   }, [setPointerLockHandlers]);
 
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+
+    const handleLock = () => {
+      setIsPointerLocked(true);
+      setCursorPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      });
+    };
+
+    const handleUnlock = () => {
+      setIsPointerLocked(false);
+    };
+
+    controls.addEventListener('lock', handleLock);
+    controls.addEventListener('unlock', handleUnlock);
+
+    return () => {
+      controls.removeEventListener('lock', handleLock);
+      controls.removeEventListener('unlock', handleUnlock);
+    };
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (isPointerLocked) {
+        setCursorPosition((prev) => ({
+          x: clamp(prev.x + event.movementX, 0, window.innerWidth),
+          y: clamp(prev.y + event.movementY, 0, window.innerHeight),
+        }));
+      } else {
+        setCursorPosition({ x: event.clientX, y: event.clientY });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, [isPointerLocked]);
+
+  useEffect(() => {
+    if (!isPointerLocked) return;
+    const handleResize = () => {
+      setCursorPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    };
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isPointerLocked]);
+
   useFrame((_, delta) => {
     const speed = movement.current.sprint ? 20 : 15;
     const acceleration = speed * delta * 2.6;
@@ -150,13 +210,49 @@ const ControlsDesktop = () => {
     }
   });
 
+  const cursorOverlay =
+    isPointerLocked &&
+    typeof document !== 'undefined' &&
+    createPortal(
+      <div
+        style={{
+          position: 'fixed',
+          left: 0,
+          top: 0,
+          width: '100vw',
+          height: '100vh',
+          pointerEvents: 'none',
+          zIndex: 9999,
+        }}
+      >
+        <div
+          style={{
+            position: 'absolute',
+            left: `${cursorPosition.x}px`,
+            top: `${cursorPosition.y}px`,
+            transform: 'translate(-50%, -50%)',
+            width: '18px',
+            height: '18px',
+            borderRadius: '999px',
+            border: '2px solid rgba(232, 200, 140, 0.9)',
+            background: 'rgba(232, 200, 140, 0.15)',
+            boxShadow: '0 0 8px rgba(232, 200, 140, 0.45)',
+          }}
+        />
+      </div>,
+      document.body,
+    );
+
   return (
-    <PointerLockControls
-      ref={controlsRef}
-      makeDefault
-      selector="#museum-canvas"
-      pointerSpeed={settings.lookSensitivity}
-    />
+    <>
+      {cursorOverlay}
+      <PointerLockControls
+        ref={controlsRef}
+        makeDefault
+        selector="#museum-canvas"
+        pointerSpeed={settings.lookSensitivity}
+      />
+    </>
   );
 };
 
