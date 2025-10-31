@@ -18,16 +18,16 @@ const ControlsDesktop = () => {
   const focusRef = useRef<string | null>(focusCandidateId);
   const yaw = useRef(0);
   const pitch = useRef(0);
-  const lookState = useRef<{
+  const pointerState = useRef<{
     active: boolean;
-    pending: boolean;
     pointerId: number | null;
+    hasLast: boolean;
     lastX: number;
     lastY: number;
   }>({
     active: false,
-    pending: false,
     pointerId: null,
+    hasLast: false,
     lastX: 0,
     lastY: 0,
   });
@@ -122,81 +122,88 @@ const ControlsDesktop = () => {
     const canvas = document.getElementById('museum-canvas');
     if (!canvas) return;
 
-    const detachGlobalHandlers = () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-      window.removeEventListener('pointercancel', handlePointerUp);
+    const previousCursor = canvas.style.cursor;
+    canvas.style.cursor = 'default';
+
+    const handlePointerEnter = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      pointerState.current.active = true;
+      pointerState.current.pointerId = event.pointerId;
+      pointerState.current.hasLast = false;
+    };
+
+    const handlePointerLeave = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse') return;
+      if (pointerState.current.pointerId !== null && pointerState.current.pointerId !== event.pointerId) {
+        return;
+      }
+      pointerState.current.active = false;
+      pointerState.current.pointerId = null;
+      pointerState.current.hasLast = false;
+    };
+
+    const handleWindowBlur = () => {
+      pointerState.current.active = false;
+      pointerState.current.pointerId = null;
+      pointerState.current.hasLast = false;
     };
 
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
-      if (lookState.current.pointerId !== event.pointerId) return;
-
-      const deltaX = event.clientX - lookState.current.lastX;
-      const deltaY = event.clientY - lookState.current.lastY;
-      lookState.current.lastX = event.clientX;
-      lookState.current.lastY = event.clientY;
-
-      if (!lookState.current.active) {
-        if (!lookState.current.pending) return;
-        if (Math.abs(deltaX) < 2 && Math.abs(deltaY) < 2) {
-          return;
-        }
-        lookState.current.active = true;
-        lookState.current.pending = false;
+      if (!pointerState.current.active) return;
+      if (pointerState.current.pointerId !== null && pointerState.current.pointerId !== event.pointerId) {
+        return;
       }
+
+      if (!pointerState.current.hasLast) {
+        pointerState.current.lastX = event.clientX;
+        pointerState.current.lastY = event.clientY;
+        pointerState.current.hasLast = true;
+        return;
+      }
+
+      let deltaX = event.movementX;
+      let deltaY = event.movementY;
+
+      if (
+        deltaX === undefined ||
+        deltaY === undefined ||
+        Number.isNaN(deltaX) ||
+        Number.isNaN(deltaY) ||
+        (deltaX === 0 && deltaY === 0 &&
+          (event.clientX !== pointerState.current.lastX || event.clientY !== pointerState.current.lastY))
+      ) {
+        deltaX = event.clientX - pointerState.current.lastX;
+        deltaY = event.clientY - pointerState.current.lastY;
+      }
+
+      pointerState.current.lastX = event.clientX;
+      pointerState.current.lastY = event.clientY;
+      pointerState.current.hasLast = true;
 
       const sensitivity = settings.lookSensitivity * 0.0022;
       yaw.current -= deltaX * sensitivity;
       pitch.current -= deltaY * sensitivity;
       pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
-
-      camera.rotation.set(pitch.current, yaw.current, 0);
     };
 
-    const resetLookState = () => {
-      lookState.current.active = false;
-      lookState.current.pending = false;
-      lookState.current.pointerId = null;
-    };
+    canvas.addEventListener('pointerenter', handlePointerEnter);
+    canvas.addEventListener('pointerleave', handlePointerLeave);
+    window.addEventListener('pointermove', handlePointerMove);
 
-    const handlePointerUp = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return;
-      if (lookState.current.pointerId !== event.pointerId) return;
-      detachGlobalHandlers();
-      resetLookState();
-    };
-
-    const handlePointerDown = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return;
-      if (event.button !== 0) return;
-
-      lookState.current.pointerId = event.pointerId;
-      lookState.current.lastX = event.clientX;
-      lookState.current.lastY = event.clientY;
-      lookState.current.pending = true;
-      lookState.current.active = false;
-
-      window.addEventListener('pointermove', handlePointerMove);
-      window.addEventListener('pointerup', handlePointerUp);
-      window.addEventListener('pointercancel', handlePointerUp);
-    };
-
-    canvas.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('blur', handleWindowBlur);
 
     return () => {
-      detachGlobalHandlers();
-      canvas.removeEventListener('pointerdown', handlePointerDown);
+      canvas.removeEventListener('pointerenter', handlePointerEnter);
+      canvas.removeEventListener('pointerleave', handlePointerLeave);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('blur', handleWindowBlur);
+      canvas.style.cursor = previousCursor;
     };
   }, [camera, settings.lookSensitivity]);
 
   useFrame((_, delta) => {
-    if (!lookState.current.active) {
-      yaw.current = camera.rotation.y;
-      pitch.current = camera.rotation.x;
-    } else {
-      camera.rotation.set(pitch.current, yaw.current, 0);
-    }
+    camera.rotation.set(pitch.current, yaw.current, 0);
 
     const speed = movement.current.sprint ? 20 : 15;
     const acceleration = speed * delta * 2.6;
