@@ -19,14 +19,10 @@ const ControlsDesktop = () => {
   const yaw = useRef(0);
   const pitch = useRef(0);
   const pointerState = useRef<{
-    active: boolean;
-    pointerId: number | null;
     hasLast: boolean;
     lastX: number;
     lastY: number;
   }>({
-    active: false,
-    pointerId: null,
     hasLast: false,
     lastX: 0,
     lastY: 0,
@@ -125,33 +121,22 @@ const ControlsDesktop = () => {
     const previousCursor = canvas.style.cursor;
     canvas.style.cursor = 'default';
 
-    const handlePointerEnter = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return;
-      pointerState.current.active = true;
-      pointerState.current.pointerId = event.pointerId;
-      pointerState.current.hasLast = false;
-    };
-
-    const handlePointerLeave = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return;
-      if (pointerState.current.pointerId !== null && pointerState.current.pointerId !== event.pointerId) {
-        return;
-      }
-      pointerState.current.active = false;
-      pointerState.current.pointerId = null;
-      pointerState.current.hasLast = false;
-    };
-
     const handleWindowBlur = () => {
-      pointerState.current.active = false;
-      pointerState.current.pointerId = null;
       pointerState.current.hasLast = false;
     };
 
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
-      if (!pointerState.current.active) return;
-      if (pointerState.current.pointerId !== null && pointerState.current.pointerId !== event.pointerId) {
+
+      const rect = canvas.getBoundingClientRect();
+      const inside =
+        event.clientX >= rect.left &&
+        event.clientX <= rect.right &&
+        event.clientY >= rect.top &&
+        event.clientY <= rect.bottom;
+
+      if (!inside) {
+        pointerState.current.hasLast = false;
         return;
       }
 
@@ -187,15 +172,11 @@ const ControlsDesktop = () => {
       pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
     };
 
-    canvas.addEventListener('pointerenter', handlePointerEnter);
-    canvas.addEventListener('pointerleave', handlePointerLeave);
     window.addEventListener('pointermove', handlePointerMove);
 
     window.addEventListener('blur', handleWindowBlur);
 
     return () => {
-      canvas.removeEventListener('pointerenter', handlePointerEnter);
-      canvas.removeEventListener('pointerleave', handlePointerLeave);
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('blur', handleWindowBlur);
       canvas.style.cursor = previousCursor;
