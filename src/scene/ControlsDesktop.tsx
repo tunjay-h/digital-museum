@@ -18,15 +18,21 @@ const ControlsDesktop = () => {
   const focusRef = useRef<string | null>(focusCandidateId);
   const yaw = useRef(0);
   const pitch = useRef(0);
-  const pointerState = useRef<{
-    hasLast: boolean;
-    lastX: number;
-    lastY: number;
-  }>({
-    hasLast: false,
-    lastX: 0,
-    lastY: 0,
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const lookMode = useRef<'free' | 'locked'>('free');
+  const pointerLockActive = useRef(false);
+  const freeLook = useRef({
+    inside: false,
+    offsetX: 0,
+    offsetY: 0,
+    edgeYaw: 0,
   });
+  const crosshairRef = useRef<HTMLDivElement | null>(null);
+  const lookSensitivityRef = useRef(settings.lookSensitivity);
+
+  useEffect(() => {
+    lookSensitivityRef.current = settings.lookSensitivity;
+  }, [settings.lookSensitivity]);
 
   useEffect(() => {
     focusRef.current = focusCandidateId;
@@ -58,6 +64,18 @@ const ControlsDesktop = () => {
         case 'KeyF':
           if (focusRef.current) {
             openInfoPanel(focusRef.current);
+          }
+          break;
+        case 'KeyL':
+          {
+            const canvas = canvasRef.current;
+            if (!canvas) break;
+
+            if (document.pointerLockElement === canvas) {
+              document.exitPointerLock();
+            } else {
+              canvas.requestPointerLock();
+            }
           }
           break;
         default:
@@ -108,25 +126,72 @@ const ControlsDesktop = () => {
   }, [camera]);
 
   useEffect(() => {
-    setPointerLockHandlers({ lock: null, unlock: null });
-    return () => {
-      setPointerLockHandlers({ lock: null, unlock: null });
-    };
-  }, [setPointerLockHandlers]);
-
-  useEffect(() => {
-    const canvas = document.getElementById('museum-canvas');
+    const canvas = document.getElementById('museum-canvas') as HTMLCanvasElement | null;
     if (!canvas) return;
 
-    const previousCursor = canvas.style.cursor;
-    canvas.style.cursor = 'default';
+    canvasRef.current = canvas;
 
-    const handleWindowBlur = () => {
-      pointerState.current.hasLast = false;
+    const createCrosshair = () => {
+      const element = document.createElement('div');
+      element.style.position = 'fixed';
+      element.style.top = '50%';
+      element.style.left = '50%';
+      element.style.width = '18px';
+      element.style.height = '18px';
+      element.style.marginLeft = '-9px';
+      element.style.marginTop = '-9px';
+      element.style.borderRadius = '999px';
+      element.style.border = '1px solid rgba(255,255,255,0.75)';
+      element.style.boxShadow = '0 0 10px rgba(228, 181, 100, 0.65)';
+      element.style.opacity = '0.85';
+      element.style.pointerEvents = 'none';
+      element.style.zIndex = '1200';
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      crosshairRef.current = element;
+    };
+
+    createCrosshair();
+
+    const applyPointerLockState = (active: boolean) => {
+      pointerLockActive.current = active;
+      lookMode.current = active ? 'locked' : 'free';
+
+      if (active) {
+        canvas.style.cursor = 'none';
+        freeLook.current.inside = false;
+        freeLook.current.offsetX = 0;
+        freeLook.current.offsetY = 0;
+        freeLook.current.edgeYaw = 0;
+        if (crosshairRef.current) {
+          crosshairRef.current.style.display = 'block';
+        }
+      } else {
+        canvas.style.cursor = 'default';
+        if (crosshairRef.current) {
+          crosshairRef.current.style.display = 'none';
+        }
+      }
+    };
+
+    const handlePointerLockChange = () => {
+      applyPointerLockState(document.pointerLockElement === canvas);
+    };
+
+    const handlePointerLockError = () => {
+      applyPointerLockState(false);
     };
 
     const handlePointerMove = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
+
+      if (pointerLockActive.current) {
+        const sensitivity = lookSensitivityRef.current * 0.0022;
+        yaw.current -= event.movementX * sensitivity;
+        pitch.current -= event.movementY * sensitivity;
+        pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
+        return;
+      }
 
       const rect = canvas.getBoundingClientRect();
       const inside =
@@ -135,55 +200,108 @@ const ControlsDesktop = () => {
         event.clientY >= rect.top &&
         event.clientY <= rect.bottom;
 
+      freeLook.current.inside = inside;
+
       if (!inside) {
-        pointerState.current.hasLast = false;
+        freeLook.current.offsetX = 0;
+        freeLook.current.offsetY = 0;
+        freeLook.current.edgeYaw = 0;
         return;
       }
 
-      if (!pointerState.current.hasLast) {
-        pointerState.current.lastX = event.clientX;
-        pointerState.current.lastY = event.clientY;
-        pointerState.current.hasLast = true;
-        return;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const normalizedX = clamp((event.clientX - centerX) / (rect.width / 2), -1, 1);
+      const normalizedY = clamp((event.clientY - centerY) / (rect.height / 2), -1, 1);
+
+      freeLook.current.offsetX = normalizedX;
+      freeLook.current.offsetY = normalizedY;
+
+      const edgeThreshold = 32;
+      const distanceLeft = event.clientX - rect.left;
+      const distanceRight = rect.right - event.clientX;
+      if (distanceLeft <= edgeThreshold) {
+        freeLook.current.edgeYaw = 1;
+      } else if (distanceRight <= edgeThreshold) {
+        freeLook.current.edgeYaw = -1;
+      } else {
+        freeLook.current.edgeYaw = 0;
       }
-
-      let deltaX = event.movementX;
-      let deltaY = event.movementY;
-
-      if (
-        deltaX === undefined ||
-        deltaY === undefined ||
-        Number.isNaN(deltaX) ||
-        Number.isNaN(deltaY) ||
-        (deltaX === 0 && deltaY === 0 &&
-          (event.clientX !== pointerState.current.lastX || event.clientY !== pointerState.current.lastY))
-      ) {
-        deltaX = event.clientX - pointerState.current.lastX;
-        deltaY = event.clientY - pointerState.current.lastY;
-      }
-
-      pointerState.current.lastX = event.clientX;
-      pointerState.current.lastY = event.clientY;
-      pointerState.current.hasLast = true;
-
-      const sensitivity = settings.lookSensitivity * 0.0022;
-      yaw.current -= deltaX * sensitivity;
-      pitch.current -= deltaY * sensitivity;
-      pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
     };
 
-    window.addEventListener('pointermove', handlePointerMove);
+    const handlePointerLeave = () => {
+      if (pointerLockActive.current) return;
+      freeLook.current.inside = false;
+      freeLook.current.offsetX = 0;
+      freeLook.current.offsetY = 0;
+      freeLook.current.edgeYaw = 0;
+    };
 
+    const handleWindowBlur = () => {
+      if (pointerLockActive.current) {
+        document.exitPointerLock();
+      }
+      freeLook.current.inside = false;
+      freeLook.current.offsetX = 0;
+      freeLook.current.offsetY = 0;
+      freeLook.current.edgeYaw = 0;
+    };
+
+    const requestLock = () => {
+      if (document.pointerLockElement !== canvas) {
+        canvas.requestPointerLock();
+      }
+    };
+
+    const exitLock = () => {
+      if (document.pointerLockElement === canvas) {
+        document.exitPointerLock();
+      }
+    };
+
+    applyPointerLockState(document.pointerLockElement === canvas);
+    setPointerLockHandlers({ lock: requestLock, unlock: exitLock });
+
+    document.addEventListener('pointerlockchange', handlePointerLockChange);
+    document.addEventListener('pointerlockerror', handlePointerLockError);
+    window.addEventListener('pointermove', handlePointerMove);
+    canvas.addEventListener('pointerleave', handlePointerLeave);
     window.addEventListener('blur', handleWindowBlur);
 
     return () => {
+      if (document.pointerLockElement === canvas) {
+        document.exitPointerLock();
+      }
+      document.removeEventListener('pointerlockchange', handlePointerLockChange);
+      document.removeEventListener('pointerlockerror', handlePointerLockError);
       window.removeEventListener('pointermove', handlePointerMove);
+      canvas.removeEventListener('pointerleave', handlePointerLeave);
       window.removeEventListener('blur', handleWindowBlur);
-      canvas.style.cursor = previousCursor;
+      setPointerLockHandlers({ lock: null, unlock: null });
+      if (crosshairRef.current) {
+        document.body.removeChild(crosshairRef.current);
+        crosshairRef.current = null;
+      }
+      canvas.style.cursor = 'default';
     };
-  }, [camera, settings.lookSensitivity]);
+  }, [setPointerLockHandlers]);
 
   useFrame((_, delta) => {
+    if (lookMode.current === 'free') {
+      if (freeLook.current.inside) {
+        const yawSpeed = freeLook.current.offsetX * settings.lookSensitivity * 1.8;
+        const pitchSpeed = freeLook.current.offsetY * settings.lookSensitivity * 1.4;
+        yaw.current -= yawSpeed * delta;
+        pitch.current -= pitchSpeed * delta;
+      }
+
+      if (freeLook.current.edgeYaw !== 0) {
+        const edgeSpeed = settings.lookSensitivity * 0.75;
+        yaw.current += freeLook.current.edgeYaw * edgeSpeed * delta;
+      }
+    }
+
+    pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
     camera.rotation.set(pitch.current, yaw.current, 0);
 
     const speed = movement.current.sprint ? 20 : 15;
