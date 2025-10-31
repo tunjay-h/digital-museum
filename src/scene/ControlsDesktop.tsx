@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { PointerLockControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
 import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
-import { createPortal } from 'react-dom';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -21,10 +20,29 @@ const ControlsDesktop = () => {
   const focusRef = useRef<string | null>(focusCandidateId);
   const controlsRef = useRef<PointerLockControlsImpl | null>(null);
   const [isPointerLocked, setIsPointerLocked] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState(() => ({
+  const cursorOverlayRef = useRef<HTMLDivElement | null>(null);
+  const cursorDotRef = useRef<HTMLDivElement | null>(null);
+  const cursorPositionRef = useRef({
     x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
     y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0,
-  }));
+  });
+
+  const applyCursorPosition = useCallback(() => {
+    const cursor = cursorDotRef.current;
+    if (!cursor) return;
+    const { x, y } = cursorPositionRef.current;
+    cursor.style.left = `${x}px`;
+    cursor.style.top = `${y}px`;
+  }, []);
+
+  const setCursorPosition = useCallback(
+    (x: number, y: number) => {
+      cursorPositionRef.current.x = clamp(x, 0, window.innerWidth);
+      cursorPositionRef.current.y = clamp(y, 0, window.innerHeight);
+      applyCursorPosition();
+    },
+    [applyCursorPosition],
+  );
 
   useEffect(() => {
     focusRef.current = focusCandidateId;
@@ -120,10 +138,7 @@ const ControlsDesktop = () => {
 
     const handleLock = () => {
       setIsPointerLocked(true);
-      setCursorPosition({
-        x: window.innerWidth / 2,
-        y: window.innerHeight / 2,
-      });
+      setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
     };
 
     const handleUnlock = () => {
@@ -137,17 +152,59 @@ const ControlsDesktop = () => {
       controls.removeEventListener('lock', handleLock);
       controls.removeEventListener('unlock', handleUnlock);
     };
-  }, []);
+  }, [setCursorPosition]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.pointerEvents = 'none';
+    overlay.style.zIndex = '9999';
+    overlay.style.display = 'none';
+
+    const cursor = document.createElement('div');
+    cursor.style.position = 'absolute';
+    cursor.style.width = '18px';
+    cursor.style.height = '18px';
+    cursor.style.borderRadius = '999px';
+    cursor.style.border = '2px solid rgba(232, 200, 140, 0.9)';
+    cursor.style.background = 'rgba(232, 200, 140, 0.15)';
+    cursor.style.boxShadow = '0 0 8px rgba(232, 200, 140, 0.45)';
+    cursor.style.transform = 'translate(-50%, -50%)';
+
+    overlay.appendChild(cursor);
+    document.body.appendChild(overlay);
+
+    cursorOverlayRef.current = overlay;
+    cursorDotRef.current = cursor;
+    setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
+
+    return () => {
+      cursorOverlayRef.current = null;
+      cursorDotRef.current = null;
+      overlay.remove();
+    };
+  }, [setCursorPosition]);
+
+  useEffect(() => {
+    const overlay = cursorOverlayRef.current;
+    if (!overlay) return;
+    overlay.style.display = isPointerLocked ? 'block' : 'none';
+  }, [isPointerLocked]);
 
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       if (isPointerLocked) {
-        setCursorPosition((prev) => ({
-          x: clamp(prev.x + event.movementX, 0, window.innerWidth),
-          y: clamp(prev.y + event.movementY, 0, window.innerHeight),
-        }));
+        setCursorPosition(
+          cursorPositionRef.current.x + event.movementX,
+          cursorPositionRef.current.y + event.movementY,
+        );
       } else {
-        setCursorPosition({ x: event.clientX, y: event.clientY });
+        setCursorPosition(event.clientX, event.clientY);
       }
     };
 
@@ -155,18 +212,18 @@ const ControlsDesktop = () => {
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
     };
-  }, [isPointerLocked]);
+  }, [isPointerLocked, setCursorPosition]);
 
   useEffect(() => {
     if (!isPointerLocked) return;
     const handleResize = () => {
-      setCursorPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+      setCursorPosition(window.innerWidth / 2, window.innerHeight / 2);
     };
     window.addEventListener('resize', handleResize);
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, [isPointerLocked]);
+  }, [isPointerLocked, setCursorPosition]);
 
   useFrame((_, delta) => {
     const speed = movement.current.sprint ? 20 : 15;
@@ -210,49 +267,13 @@ const ControlsDesktop = () => {
     }
   });
 
-  const cursorOverlay =
-    isPointerLocked &&
-    typeof document !== 'undefined' &&
-    createPortal(
-      <div
-        style={{
-          position: 'fixed',
-          left: 0,
-          top: 0,
-          width: '100vw',
-          height: '100vh',
-          pointerEvents: 'none',
-          zIndex: 9999,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            left: `${cursorPosition.x}px`,
-            top: `${cursorPosition.y}px`,
-            transform: 'translate(-50%, -50%)',
-            width: '18px',
-            height: '18px',
-            borderRadius: '999px',
-            border: '2px solid rgba(232, 200, 140, 0.9)',
-            background: 'rgba(232, 200, 140, 0.15)',
-            boxShadow: '0 0 8px rgba(232, 200, 140, 0.45)',
-          }}
-        />
-      </div>,
-      document.body,
-    );
-
   return (
-    <>
-      {cursorOverlay}
-      <PointerLockControls
-        ref={controlsRef}
-        makeDefault
-        selector="#museum-canvas"
-        pointerSpeed={settings.lookSensitivity}
-      />
-    </>
+    <PointerLockControls
+      ref={controlsRef}
+      makeDefault
+      selector="#museum-canvas"
+      pointerSpeed={settings.lookSensitivity}
+    />
   );
 };
 
