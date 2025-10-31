@@ -21,14 +21,12 @@ const ControlsDesktop = () => {
   const lookState = useRef<{
     active: boolean;
     pending: boolean;
-    blockContextMenu: boolean;
     pointerId: number | null;
     lastX: number;
     lastY: number;
   }>({
     active: false,
     pending: false,
-    blockContextMenu: false,
     pointerId: null,
     lastX: 0,
     lastY: 0,
@@ -124,18 +122,10 @@ const ControlsDesktop = () => {
     const canvas = document.getElementById('museum-canvas');
     if (!canvas) return;
 
-    const handlePointerDown = (event: PointerEvent) => {
-      if (event.pointerType !== 'mouse') return;
-      if (event.button !== 0 && event.button !== 2) return;
-      lookState.current.pointerId = event.pointerId;
-      lookState.current.lastX = event.clientX;
-      lookState.current.lastY = event.clientY;
-      lookState.current.pending = event.button === 0;
-      lookState.current.active = event.button === 2;
-      lookState.current.blockContextMenu = event.button === 2;
-      if (event.button === 2) {
-        canvas.setPointerCapture(event.pointerId);
-      }
+    const detachGlobalHandlers = () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      window.removeEventListener('pointercancel', handlePointerUp);
     };
 
     const handlePointerMove = (event: PointerEvent) => {
@@ -154,7 +144,6 @@ const ControlsDesktop = () => {
         }
         lookState.current.active = true;
         lookState.current.pending = false;
-        canvas.setPointerCapture(event.pointerId);
       }
 
       const sensitivity = settings.lookSensitivity * 0.0022;
@@ -165,53 +154,39 @@ const ControlsDesktop = () => {
       camera.rotation.set(pitch.current, yaw.current, 0);
     };
 
-    const releasePointer = (event: PointerEvent) => {
-      if (canvas.hasPointerCapture(event.pointerId)) {
-        canvas.releasePointerCapture(event.pointerId);
-      }
+    const resetLookState = () => {
+      lookState.current.active = false;
+      lookState.current.pending = false;
+      lookState.current.pointerId = null;
     };
 
     const handlePointerUp = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
       if (lookState.current.pointerId !== event.pointerId) return;
-      lookState.current.active = false;
-      lookState.current.pending = false;
-      lookState.current.blockContextMenu = false;
-      lookState.current.pointerId = null;
-      releasePointer(event);
+      detachGlobalHandlers();
+      resetLookState();
     };
 
-    const handlePointerLeave = (event: PointerEvent) => {
+    const handlePointerDown = (event: PointerEvent) => {
       if (event.pointerType !== 'mouse') return;
-      if (lookState.current.pointerId !== event.pointerId) return;
-      lookState.current.active = false;
-      lookState.current.pending = false;
-      lookState.current.blockContextMenu = false;
-      lookState.current.pointerId = null;
-      releasePointer(event);
-    };
+      if (event.button !== 0) return;
 
-    const handleContextMenu = (event: MouseEvent) => {
-      if (lookState.current.active || lookState.current.blockContextMenu) {
-        event.preventDefault();
-        lookState.current.blockContextMenu = false;
-      }
+      lookState.current.pointerId = event.pointerId;
+      lookState.current.lastX = event.clientX;
+      lookState.current.lastY = event.clientY;
+      lookState.current.pending = true;
+      lookState.current.active = false;
+
+      window.addEventListener('pointermove', handlePointerMove);
+      window.addEventListener('pointerup', handlePointerUp);
+      window.addEventListener('pointercancel', handlePointerUp);
     };
 
     canvas.addEventListener('pointerdown', handlePointerDown);
-    canvas.addEventListener('pointermove', handlePointerMove);
-    canvas.addEventListener('pointerup', handlePointerUp);
-    canvas.addEventListener('pointercancel', handlePointerUp);
-    canvas.addEventListener('pointerleave', handlePointerLeave);
-    canvas.addEventListener('contextmenu', handleContextMenu);
 
     return () => {
+      detachGlobalHandlers();
       canvas.removeEventListener('pointerdown', handlePointerDown);
-      canvas.removeEventListener('pointermove', handlePointerMove);
-      canvas.removeEventListener('pointerup', handlePointerUp);
-      canvas.removeEventListener('pointercancel', handlePointerUp);
-      canvas.removeEventListener('pointerleave', handlePointerLeave);
-      canvas.removeEventListener('contextmenu', handleContextMenu);
     };
   }, [camera, settings.lookSensitivity]);
 
