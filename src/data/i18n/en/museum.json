@@ -1,7 +1,7 @@
 {
   "hud": {
-    "title": "Presidential gallery",
-    "subtitle": "A digital corridor inspired by the Ismailiyya Palace"
+    "title": "Atrium of presidents & founders",
+    "subtitle": "Explore four radial halls celebrating ANAS leadership"
   },
   "overlay": {
     "title": "Controls & settings",
@@ -32,6 +32,8 @@
   "info": {
     "term": "Term",
     "termPresent": "Serving",
+    "life": "Life",
+    "role": "Role",
     "sources": "Sources",
     "transcript": "Transcript",
     "openAudio": "Open audio",

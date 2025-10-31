@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMuseumStore } from '../store/useMuseumStore';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 
 interface HUDProps {
   isMobile: boolean;
@@ -16,7 +16,7 @@ const HUD = ({ isMobile }: HUDProps) => {
   const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
 
   const focusEntry = useMemo(() => {
-    return presidents.find((president) => president.person_id === focusCandidateId) ?? null;
+    return portraits.find((portrait) => portrait.person_id === focusCandidateId) ?? null;
   }, [focusCandidateId]);
 
   return (

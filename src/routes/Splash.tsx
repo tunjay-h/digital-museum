@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { usePreloadAssets } from '../hooks/usePreloadAssets';
 import { useMuseumStore } from '../store/useMuseumStore';
 import LanguageSwitch from '../ui/LanguageSwitch';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 
 const heroImage = '/images/ismailiyya-palace.jpeg';
 
@@ -28,9 +28,10 @@ const Splash = () => {
   }, [enteredMuseum, navigate]);
 
   const featuredNames = useMemo(() => {
-    return presidents
+    return portraits
+      .filter((portrait) => portrait.hall_id === 'presidents')
       .slice(0, 3)
-      .map((president) => president.name_en)
+      .map((portrait) => portrait.name_en)
       .join(' • ');
   }, []);
 

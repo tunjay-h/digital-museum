@@ -14,10 +14,16 @@ interface FrameProps {
   isMobile: boolean;
 }
 
+const extractYear = (value?: string) => {
+  if (!value) return undefined;
+  const match = value.match(/\d{4}/);
+  return match ? match[0] : value;
+};
+
 const Frame = ({ placement, isHighlighted, onSelect, panelColor, isMobile }: FrameProps) => {
-  const { president, position, rotation, side } = placement;
+  const { portrait, position, rotation, side } = placement;
   const { gl } = useThree();
-  const portraitTexture = useTexture(president.image_src);
+  const portraitTexture = useTexture(portrait.image_src);
   const frameTexture = useTexture('/textures/frame_gilded.webp');
   const panelTexture = useTexture('/textures/mounting_panel.webp');
   const plaqueTexture = useTexture('/textures/plaque_base.webp');
@@ -41,13 +47,30 @@ const Frame = ({ placement, isHighlighted, onSelect, panelColor, isMobile }: Fra
   }, [frameTexture, gl, panelTexture, plaqueTexture, portraitTexture]);
 
   const mountingTone = isHighlighted ? '#ceb394' : hovered ? '#c7ad8f' : panelColor;
-  const labelName = language === 'az' ? president.name_az : president.name_en;
-  const presentLabel = language === 'az' ? 'indiki' : 'present';
-  const termEnd =
-    president.term_end?.toLowerCase?.() === 'present' ? presentLabel : president.term_end;
-  const termLabel = `${president.term_start} – ${termEnd}`;
+  const labelName = language === 'az' ? portrait.name_az : portrait.name_en;
 
-  const plaqueText = `${labelName}\n${termLabel}`;
+  const presentLabel = language === 'az' ? 'indiki' : 'present';
+  const timeline = useMemo(() => {
+    if (portrait.term_start && portrait.term_end) {
+      const normalizedEnd = portrait.term_end.toLowerCase();
+      const displayEnd = normalizedEnd === 'present' ? presentLabel : portrait.term_end;
+      return `${portrait.term_start} – ${displayEnd}`;
+    }
+
+    if (portrait.birth && portrait.death) {
+      const start = extractYear(portrait.birth);
+      const end = extractYear(portrait.death);
+      if (start && end) {
+        return `${start} – ${end}`;
+      }
+    }
+
+    return undefined;
+  }, [portrait.birth, portrait.death, portrait.term_end, portrait.term_start, presentLabel]);
+
+  const subtitle = portrait.role ?? timeline ?? '';
+  const secondLine = timeline ?? subtitle;
+  const plaqueText = secondLine ? `${labelName}\n${secondLine}` : labelName;
 
   const plaqueFontSize = useMemo(() => (isMobile ? 0.085 : 0.09), [isMobile]);
   const portraitNormalScale = useMemo(() => new Vector2(0.6, 0.6), []);
@@ -58,7 +81,7 @@ const Frame = ({ placement, isHighlighted, onSelect, panelColor, isMobile }: Fra
       rotation={rotation}
       onClick={(event) => {
         event.stopPropagation();
-        onSelect(president.person_id);
+        onSelect(portrait.person_id);
       }}
       onPointerOver={(event) => {
         event.stopPropagation();
@@ -125,7 +148,7 @@ const Frame = ({ placement, isHighlighted, onSelect, panelColor, isMobile }: Fra
       <mesh position={[0, -1.4, 0]}>
         <planeGeometry args={[1.6, 0.02]} />
         <meshStandardMaterial
-          color={side === 'end' ? '#ceb58b' : '#8c6a3d'}
+          color={side === 'center' ? '#ceb58b' : '#8c6a3d'}
           transparent
           opacity={0.55}
           roughness={0.4}

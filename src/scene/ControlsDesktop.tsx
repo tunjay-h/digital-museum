@@ -3,10 +3,9 @@ import { PointerLockControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { CAMERA_EYE_HEIGHT } from './constants';
+import { clampToAtrium } from './clampToAtrium';
 import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
-
-const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 const ControlsDesktop = () => {
   const { camera } = useThree();
@@ -129,16 +128,8 @@ const ControlsDesktop = () => {
 
     camera.position.addScaledVector(velocity.current, delta);
 
-    const minX = -CORRIDOR_WIDTH / 2 + 0.6;
-    const maxX = CORRIDOR_WIDTH / 2 - 0.6;
-    const maxZ = 4;
-    const minZ = END_Z - 2;
-
-    camera.position.set(
-      clamp(camera.position.x, minX, maxX),
-      CAMERA_EYE_HEIGHT,
-      clamp(camera.position.z, minZ, maxZ),
-    );
+    clampToAtrium(camera.position);
+    camera.position.y = CAMERA_EYE_HEIGHT;
 
     const moving = velocity.current.lengthSq() > 0.0004;
     if (settings.cameraBob && moving) {

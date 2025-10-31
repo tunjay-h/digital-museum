@@ -4,16 +4,16 @@ import azUi from '../data/i18n/az/ui.json';
 import enUi from '../data/i18n/en/ui.json';
 import azMuseum from '../data/i18n/az/museum.json';
 import enMuseum from '../data/i18n/en/museum.json';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 
-type President = (typeof presidents)[number];
+type Portrait = (typeof portraits)[number];
 
 type BiosNamespace = Record<string, string>;
 
 const buildBios = (locale: 'az' | 'en'): BiosNamespace => {
-  return presidents.reduce((acc, president: President) => {
-    acc[president.person_id] =
-      locale === 'az' ? president.description_az : president.description_en;
+  return portraits.reduce((acc, portrait: Portrait) => {
+    acc[portrait.person_id] =
+      locale === 'az' ? portrait.description_az : portrait.description_en;
     return acc;
   }, {} as BiosNamespace);
 };

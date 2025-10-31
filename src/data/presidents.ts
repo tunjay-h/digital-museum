@@ -1,6 +1,6 @@
 import rawPresidents from './presidents.json';
-import type { President } from '../types';
+import type { Portrait } from '../types';
 
-const presidents = rawPresidents as President[];
+const presidents = rawPresidents as Portrait[];
 
 export default presidents;

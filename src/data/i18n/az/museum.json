@@ -1,7 +1,7 @@
 {
   "hud": {
-    "title": "Prezidentlər qalereyası",
-    "subtitle": "İsmailiyyə Sarayının ruhunda rəqəmsal koridor"
+    "title": "Prezidentlər və təsisçilər atriumu",
+    "subtitle": "ANAS liderliyini əks etdirən dörd radial zalı kəşf et"
   },
   "overlay": {
     "title": "Nəzarətlər və tənzimləmələr",
@@ -32,6 +32,8 @@
   "info": {
     "term": "Prezidentlik",
     "termPresent": "Hazırda xidmət edir",
+    "life": "Həyat illəri",
+    "role": "Rol və status",
     "sources": "Mənbələr",
     "transcript": "Transkript",
     "openAudio": "Səsi aç",
