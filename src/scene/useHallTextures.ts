@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useLoader, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
-import { CORRIDOR_WIDTH, END_Z } from './constants';
+import { CORRIDOR_WIDTH, HALL_LENGTH, HUB_RADIUS, PORTAL_DEPTH } from './constants';
 
 interface MaterialTextureSet {
   baseColor: THREE.Texture | null;
@@ -98,8 +98,8 @@ export const useHallTextures = () => {
 
   return useMemo(() => {
     const maxAnisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
-    const hallLength = Math.abs(END_Z) + 6;
-    const floorLength = hallLength + 12;
+    const corridorLength = HUB_RADIUS + HALL_LENGTH + PORTAL_DEPTH;
+    const floorLength = corridorLength + 8;
 
     const floor: MaterialTextureSet = {
       baseColor: configureColorTexture(floorBase, maxAnisotropy, [CORRIDOR_WIDTH / 1.8, floorLength / 1.8]),

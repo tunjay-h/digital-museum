@@ -1,6 +1,10 @@
 export const FRAME_SPACING = 4.2;
 export const CORRIDOR_WIDTH = 5.6;
 export const FRAME_HEIGHT = 1.6;
-export const START_Z = -3.6;
-export const END_Z = START_Z - FRAME_SPACING * 6.5;
 export const CAMERA_EYE_HEIGHT = 1.7;
+export const CEILING_HEIGHT = 5.4;
+export const HUB_RADIUS = 6.6;
+export const HUB_RING_WIDTH = 1.05;
+export const HALL_LENGTH = 24;
+export const PORTAL_DEPTH = 2.4;
+export const HALL_ENTRY_OFFSET = HUB_RADIUS + 0.8;

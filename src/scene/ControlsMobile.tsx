@@ -2,9 +2,10 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { CAMERA_EYE_HEIGHT } from './constants';
+import { clampToAtrium } from './clampToAtrium';
 
-const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+const clampAngle = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 const ControlsMobile = () => {
   const { camera } = useThree();
@@ -27,7 +28,7 @@ const ControlsMobile = () => {
     const sensitivity = settings.lookSensitivity * 1.2;
     yaw.current -= mobileLook.x * sensitivity * delta * 2.2;
     pitch.current -= mobileLook.y * sensitivity * delta * 1.6;
-    pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
+    pitch.current = clampAngle(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
 
     camera.rotation.set(pitch.current, yaw.current, 0);
 
@@ -41,16 +42,8 @@ const ControlsMobile = () => {
     camera.position.addScaledVector(forward.current, -mobileMove.y * forwardSpeed * delta);
     camera.position.addScaledVector(right.current, mobileMove.x * strafeSpeed * delta);
 
-    const minX = -CORRIDOR_WIDTH / 2 + 0.6;
-    const maxX = CORRIDOR_WIDTH / 2 - 0.6;
-    const maxZ = 4;
-    const minZ = END_Z - 2;
-
-    camera.position.set(
-      clamp(camera.position.x, minX, maxX),
-      CAMERA_EYE_HEIGHT,
-      clamp(camera.position.z, minZ, maxZ),
-    );
+    clampToAtrium(camera.position);
+    camera.position.y = CAMERA_EYE_HEIGHT;
 
     const moving = Math.abs(mobileMove.x) > 0.01 || Math.abs(mobileMove.y) > 0.01;
     if (settings.cameraBob && moving) {

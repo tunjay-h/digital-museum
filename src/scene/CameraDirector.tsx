@@ -3,24 +3,47 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { Matrix4, Quaternion, Vector3 } from 'three';
 import { usePlacements } from './PlacementsContext';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, HALL_LENGTH, HUB_RADIUS, PORTAL_DEPTH } from './constants';
 import type { FramePlacement } from '../types';
+import { HALL_DEFINITION_MAP } from './halls';
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const up = new Vector3(0, 1, 0);
 
+const corridorHalf = CORRIDOR_WIDTH / 2 - 0.6;
+const minHallDistance = HUB_RADIUS - PORTAL_DEPTH * 0.2;
+const maxHallDistance = HUB_RADIUS + HALL_LENGTH - 1.5;
+
 const buildTargetPose = (placement: FramePlacement) => {
   const [frameX, frameY, frameZ] = placement.position;
-  const lateralOffset = placement.side === 'left' ? 1.05 : placement.side === 'right' ? -1.05 : 0;
-  const depthOffset = placement.side === 'end' ? 1.4 : 0.75;
+  const hallConfig = HALL_DEFINITION_MAP[placement.hallId];
+  const forward = new Vector3(0, 0, 1).applyAxisAngle(up, hallConfig.rotation).normalize();
+  const right = new Vector3().crossVectors(up, forward).normalize();
 
-  const position = new Vector3(
-    clamp(frameX + lateralOffset, -CORRIDOR_WIDTH / 2 + 0.6, CORRIDOR_WIDTH / 2 - 0.6),
-    CAMERA_EYE_HEIGHT,
-    clamp(frameZ + depthOffset, END_Z - 2, 4),
-  );
+  const base = new Vector3(frameX, frameY, frameZ);
+  const backDistance = placement.side === 'center' ? 1.6 : 1.1;
+  const lateral = placement.side === 'left' ? -1.05 : placement.side === 'right' ? 1.05 : 0;
+
+  const position = base
+    .clone()
+    .add(forward.clone().multiplyScalar(-backDistance))
+    .add(right.clone().multiplyScalar(lateral));
+
+  position.y = CAMERA_EYE_HEIGHT;
+
+  const localX = position.dot(right);
+  const clampedX = clamp(localX, -corridorHalf, corridorHalf);
+  if (clampedX !== localX) {
+    position.add(right.clone().multiplyScalar(clampedX - localX));
+  }
+
+  const localZ = position.dot(forward);
+  const clampedZ = clamp(localZ, minHallDistance, maxHallDistance);
+  if (clampedZ !== localZ) {
+    position.add(forward.clone().multiplyScalar(clampedZ - localZ));
+  }
 
   const lookAt = new Vector3(frameX, frameY, frameZ);
   const orientation = new Quaternion().setFromRotationMatrix(
@@ -57,7 +80,7 @@ const CameraDirector = () => {
     if (!placements.length) return;
     if (selectedPortraitId === lastTargetId.current) return;
 
-    const placement = placements.find((entry) => entry.president.person_id === selectedPortraitId);
+    const placement = placements.find((entry) => entry.portrait.person_id === selectedPortraitId);
     if (!placement) return;
 
     const { position, orientation } = buildTargetPose(placement);

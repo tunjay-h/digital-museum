@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 
 const loadImage = (src: string) =>
   new Promise<void>((resolve) => {
@@ -15,10 +15,9 @@ export const usePreloadAssets = (count = 4) => {
   const [isComplete, setIsComplete] = useState(false);
 
   const assets = useMemo(() => {
-    const portraits = presidents
+    return portraits
       .slice(0, count)
-      .map((president) => president.image_src);
-    return portraits;
+      .map((portrait) => portrait.image_src);
   }, [count]);
 
   useEffect(() => {

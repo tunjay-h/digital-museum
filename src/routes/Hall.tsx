@@ -12,7 +12,7 @@ import LoadingOverlay from '../ui/LoadingOverlay';
 import { isMobileLandscapeRequired, isTouchDevice } from '../lib/device';
 import { isWebGLSupported } from '../lib/webgl';
 import { useMuseumStore } from '../store/useMuseumStore';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 
 const Hall = () => {
   const location = useLocation();
@@ -82,7 +82,7 @@ const Hall = () => {
       return;
     }
 
-    const exists = presidents.some((president) => president.person_id === id);
+    const exists = portraits.some((portrait) => portrait.person_id === id);
     if (exists) {
       openInfoPanel(id);
       return;

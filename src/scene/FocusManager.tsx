@@ -26,7 +26,7 @@ const FocusManager = () => {
       const score = distance + angle * 10;
       if (score < bestScore) {
         bestScore = score;
-        bestId = placement.president.person_id;
+        bestId = placement.portrait.person_id;
       }
     });
 

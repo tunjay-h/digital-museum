@@ -3,9 +3,9 @@ import { createPortal } from 'react-dom';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { TFunction } from 'i18next';
-import presidents from '../data/presidents';
+import portraits from '../data/portraits';
 import { useMuseumStore } from '../store/useMuseumStore';
-import type { President } from '../types';
+import type { Portrait } from '../types';
 
 const panelRoot = () => document.getElementById('root');
 
@@ -14,15 +14,26 @@ const extractYear = (value: string) => {
   return match ? match[0] : value;
 };
 
-const formatTerm = (president: President, t: TFunction) => {
-  const start = extractYear(president.term_start);
-  const endValue = president.term_end.toLowerCase();
-
-  if (endValue === 'present') {
-    return `${start} — ${t('museum:info.termPresent')}`;
+const buildTimeline = (portrait: Portrait, t: TFunction) => {
+  if (portrait.term_start && portrait.term_end) {
+    const normalizedEnd = portrait.term_end.toLowerCase();
+    const present = normalizedEnd === 'present' ? t('museum:info.termPresent') : portrait.term_end;
+    return {
+      label: t('museum:info.term'),
+      value: `${portrait.term_start} — ${present}`,
+    };
   }
 
-  return `${start} — ${extractYear(president.term_end)}`;
+  if (portrait.birth && portrait.death) {
+    const start = extractYear(portrait.birth);
+    const end = extractYear(portrait.death);
+    return {
+      label: t('museum:info.life'),
+      value: `${start} — ${end}`,
+    };
+  }
+
+  return null;
 };
 
 const InfoPanel = () => {
@@ -38,8 +49,8 @@ const InfoPanel = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const president = useMemo(
-    () => presidents.find((entry) => entry.person_id === selectedPortraitId),
+  const portrait = useMemo(
+    () => portraits.find((entry) => entry.person_id === selectedPortraitId),
     [selectedPortraitId],
   );
 
@@ -88,25 +99,32 @@ const InfoPanel = () => {
   }, []);
 
   useEffect(() => {
-    if (!isOpen || !president) return;
+    if (!isOpen || !portrait) return;
 
-    const targetPath = `/hall/art/${president.person_id}`;
+    const targetPath = `/hall/art/${portrait.person_id}`;
     if (location.pathname !== targetPath) {
       navigate(targetPath, {
         replace: location.pathname.startsWith('/hall/art/'),
       });
     }
-  }, [isOpen, location.pathname, navigate, president]);
+  }, [isOpen, location.pathname, navigate, portrait]);
 
-  if (!isOpen || !president) {
+  if (!isOpen || !portrait) {
     return null;
   }
 
-  const name = language === 'az' ? president.name_az : president.name_en;
-  const description = language === 'az' ? president.description_az : president.description_en;
-  const term = formatTerm(president, t);
-  const audioSrc = language === 'az' ? president.audio_az : president.audio_en;
-  const shareUrl = `${window.location.origin}/hall/art/${president.person_id}`;
+  const name = language === 'az' ? portrait.name_az : portrait.name_en;
+  const description = language === 'az' ? portrait.description_az : portrait.description_en;
+  const timeline = buildTimeline(portrait, t);
+  const roleText = portrait.role
+    ? language === 'az'
+      ? portrait.role
+      : portrait.short_desc_en
+    : language === 'az'
+      ? portrait.short_desc_az
+      : portrait.short_desc_en;
+  const audioSrc = language === 'az' ? portrait.audio_az : portrait.audio_en;
+  const shareUrl = `${window.location.origin}/hall/art/${portrait.person_id}`;
 
   const handleCopy = async () => {
     try {
@@ -158,16 +176,28 @@ const InfoPanel = () => {
           gap: isCompactLayout ? '0.75rem' : '1rem',
         }}
       >
-        <div>
-          <span style={{ opacity: 0.6, fontSize: isCompactLayout ? '0.75rem' : '0.8rem' }}>
-            {t('museum:info.term')}
-          </span>
-          <p style={{ margin: '0.25rem 0 0 0', fontWeight: 600 }}>{term}</p>
-        </div>
+        {timeline && (
+          <div>
+            <span style={{ opacity: 0.6, fontSize: isCompactLayout ? '0.75rem' : '0.8rem' }}>
+              {timeline.label}
+            </span>
+            <p style={{ margin: '0.25rem 0 0 0', fontWeight: 600 }}>{timeline.value}</p>
+          </div>
+        )}
         <div>
           <h3 style={{ margin: 0, fontSize: isCompactLayout ? '1.5rem' : '1.8rem' }}>{name}</h3>
           <p style={{ opacity: 0.7, fontSize: isCompactLayout ? '0.9rem' : '0.95rem' }}>{description}</p>
         </div>
+        {roleText && (
+          <div>
+            <span style={{ opacity: 0.6, fontSize: isCompactLayout ? '0.75rem' : '0.8rem' }}>
+              {t('museum:info.role')}
+            </span>
+            <p style={{ margin: '0.25rem 0 0 0', opacity: 0.7, fontSize: isCompactLayout ? '0.85rem' : '0.9rem' }}>
+              {roleText}
+            </p>
+          </div>
+        )}
         <div className="hud-panel" style={{ padding: isCompactLayout ? '0.85rem' : '1rem' }}>
           <span style={{ display: 'block', marginBottom: '0.5rem', opacity: 0.6 }}>{t('audio')}</span>
           {audioSrc ? (
