@@ -4,6 +4,7 @@ import { useMuseumStore } from '../store/useMuseumStore';
 
 const MOVE_RADIUS = 70;
 const LOOK_RADIUS = 60;
+const LOOK_HORIZONTAL_LIMIT = Math.sin(Math.PI / 3);
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -64,8 +65,9 @@ const MobileControlsOverlay = () => {
     const dy = event.clientY - lookOrigin.current.y;
     const nx = clamp(dx / LOOK_RADIUS, -1, 1);
     const ny = clamp(dy / LOOK_RADIUS, -1, 1);
-    setLookVisual({ x: nx, y: ny });
-    setMobileLook({ x: nx, y: ny });
+    const limitedX = clamp(nx, -LOOK_HORIZONTAL_LIMIT, LOOK_HORIZONTAL_LIMIT);
+    setLookVisual({ x: limitedX, y: ny });
+    setMobileLook({ x: limitedX, y: ny });
   };
 
   const handleLookEnd = (event: ReactPointerEvent<HTMLDivElement>) => {

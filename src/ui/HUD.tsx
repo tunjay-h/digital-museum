@@ -14,10 +14,18 @@ const HUD = ({ isMobile }: HUDProps) => {
   const settings = useMuseumStore((state) => state.settings);
   const language = useMuseumStore((state) => state.language);
   const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
+  const isInfoPanelOpen = useMuseumStore((state) => state.isInfoPanelOpen);
 
   const focusEntry = useMemo(() => {
     return presidents.find((president) => president.person_id === focusCandidateId) ?? null;
   }, [focusCandidateId]);
+
+  const showHeader = !isOverlayOpen && (!isMobile || !isInfoPanelOpen);
+  const titleSize = isMobile ? '1.1rem' : '1.4rem';
+  const subtitleSize = isMobile ? '0.85rem' : '0.9rem';
+  const helperSize = isMobile ? '0.8rem' : '0.85rem';
+  const headerPadding = isMobile ? '0.85rem 1.1rem' : '1rem 1.5rem';
+  const headerMaxWidth = isMobile ? '280px' : '360px';
 
   return (
     <div
@@ -32,13 +40,15 @@ const HUD = ({ isMobile }: HUDProps) => {
       }}
     >
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div className="hud-panel" style={{ padding: '1rem 1.5rem', maxWidth: '360px' }}>
-          <h2 style={{ margin: 0, fontSize: '1.4rem' }}>{t('museum:hud.title')}</h2>
-          <p style={{ margin: 0, marginTop: '0.35rem', opacity: 0.65, fontSize: '0.9rem' }}>
-            {t('museum:hud.subtitle')}
-          </p>
-          <p style={{ margin: '0.75rem 0 0', opacity: 0.55, fontSize: '0.85rem' }}>{t('pressHForHelp')}</p>
-        </div>
+        {showHeader && (
+          <div className="hud-panel" style={{ padding: headerPadding, maxWidth: headerMaxWidth }}>
+            <h2 style={{ margin: 0, fontSize: titleSize }}>{t('museum:hud.title')}</h2>
+            <p style={{ margin: 0, marginTop: '0.35rem', opacity: 0.65, fontSize: subtitleSize }}>
+              {t('museum:hud.subtitle')}
+            </p>
+            <p style={{ margin: '0.65rem 0 0', opacity: 0.55, fontSize: helperSize }}>{t('pressHForHelp')}</p>
+          </div>
+        )}
         <div style={{ pointerEvents: 'none' }} />
       </header>
       <div style={{ alignSelf: 'center' }}>

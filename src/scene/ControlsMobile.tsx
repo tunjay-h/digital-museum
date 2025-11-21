@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { usePlacementsLayout } from './PlacementsContext';
+import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH } from './constants';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
@@ -11,6 +12,9 @@ const ControlsMobile = () => {
   const settings = useMuseumStore((state) => state.settings);
   const mobileMove = useMuseumStore((state) => state.mobileMove);
   const mobileLook = useMuseumStore((state) => state.mobileLook);
+  const isInfoPanelOpen = useMuseumStore((state) => state.isInfoPanelOpen);
+  const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
+  const { endZ } = usePlacementsLayout();
   const bobPhase = useRef(0);
   const yaw = useRef(0);
   const pitch = useRef(0);
@@ -24,6 +28,10 @@ const ControlsMobile = () => {
   }, [camera]);
 
   useFrame((_, delta) => {
+    if (isInfoPanelOpen || isOverlayOpen) {
+      return;
+    }
+
     const sensitivity = settings.lookSensitivity * 1.2;
     yaw.current -= mobileLook.x * sensitivity * delta * 2.2;
     pitch.current -= mobileLook.y * sensitivity * delta * 1.6;
@@ -44,7 +52,7 @@ const ControlsMobile = () => {
     const minX = -CORRIDOR_WIDTH / 2 + 0.6;
     const maxX = CORRIDOR_WIDTH / 2 - 0.6;
     const maxZ = 4;
-    const minZ = END_Z - 2;
+    const minZ = endZ - 2;
 
     camera.position.set(
       clamp(camera.position.x, minX, maxX),

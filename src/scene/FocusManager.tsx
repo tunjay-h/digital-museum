@@ -1,11 +1,11 @@
 import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Vector3 } from 'three';
-import { usePlacements } from './PlacementsContext';
+import { usePlacementsLayout } from './PlacementsContext';
 import { useMuseumStore } from '../store/useMuseumStore';
 import type { FramePlacement } from '../types';
 
 const FocusManager = () => {
-  const placements = usePlacements();
+  const { placements } = usePlacementsLayout();
   const setFocusCandidateId = useMuseumStore((state) => state.setFocusCandidateId);
   const { camera } = useThree();
   const tempDirection = new Vector3();

@@ -4,9 +4,9 @@ import { useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
 import { useMuseumStore } from '../store/useMuseumStore';
 import { useHallTextures } from './useHallTextures';
-import { CORRIDOR_WIDTH, END_Z, FRAME_SPACING, START_Z } from './constants';
+import { CORRIDOR_WIDTH, FRAME_SPACING, START_Z } from './constants';
 import Frame from './Frame';
-import { usePlacements } from './PlacementsContext';
+import { usePlacementsLayout } from './PlacementsContext';
 
 interface HallLayoutProps {
   isMobile: boolean;
@@ -53,13 +53,16 @@ const useConfiguredTexture = (
 /* eslint-enable react-hooks/exhaustive-deps */
 
 const HallLayout = ({ isMobile }: HallLayoutProps) => {
-  const placements = usePlacements();
+  const { placements, endZ } = usePlacementsLayout();
   const highlightedId = useMuseumStore((state) =>
     state.focusCandidateId ?? state.selectedPortraitId ?? null,
   );
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
+  const hallLength = Math.abs(endZ) + 6;
+  const floorLength = hallLength + 12;
+
   const { floor, trimTexture, columnTexture, archTexture, skylightTexture, wallLower, wallUpper, ceiling, panelColor } =
-    useHallTextures();
+    useHallTextures(hallLength);
 
   const { gl } = useThree();
 
@@ -67,9 +70,6 @@ const HallLayout = ({ isMobile }: HallLayoutProps) => {
     () => Math.min(12, gl.capabilities.getMaxAnisotropy()),
     [gl],
   );
-
-  const hallLength = Math.abs(END_Z) + 6;
-  const floorLength = hallLength + 12;
 
   const sideTrimTexture = useConfiguredTexture(
     trimTexture,
@@ -175,11 +175,11 @@ const HallLayout = ({ isMobile }: HallLayoutProps) => {
 
   const archPositions = useMemo(() => {
     const positions: number[] = [];
-    for (let z = START_Z - 0.6; z > END_Z - 1.2; z -= FRAME_SPACING) {
+    for (let z = START_Z - 0.6; z > endZ - 1.2; z -= FRAME_SPACING) {
       positions.push(z);
     }
     return positions;
-  }, []);
+  }, [endZ]);
 
   const columnOffsetX = useMemo(
     () => CORRIDOR_WIDTH / 2 - COLUMN_RADIUS - 0.08,
@@ -368,7 +368,7 @@ const HallLayout = ({ isMobile }: HallLayoutProps) => {
       })}
 
       {/* End wall */}
-      <group position={[0, 0, END_Z - 1.6]} rotation={[0, Math.PI, 0]}>
+      <group position={[0, 0, endZ - 1.6]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, WALL_LOWER_HEIGHT / 2, 0]} receiveShadow>
           <planeGeometry args={[CORRIDOR_WIDTH, WALL_LOWER_HEIGHT]} onUpdate={assignUv2} />
           <meshStandardMaterial
