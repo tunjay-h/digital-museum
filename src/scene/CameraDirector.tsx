@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Matrix4, Quaternion, Vector3 } from 'three';
-import { usePlacements } from './PlacementsContext';
+import { usePlacementsLayout } from './PlacementsContext';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH } from './constants';
 import type { FramePlacement } from '../types';
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max);
@@ -11,7 +11,7 @@ const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
 const up = new Vector3(0, 1, 0);
 
-const buildTargetPose = (placement: FramePlacement) => {
+const buildTargetPose = (placement: FramePlacement, endZ: number) => {
   const [frameX, frameY, frameZ] = placement.position;
   const lateralOffset = placement.side === 'left' ? 1.05 : placement.side === 'right' ? -1.05 : 0;
   const depthOffset = placement.side === 'end' ? 1.4 : 0.75;
@@ -19,7 +19,7 @@ const buildTargetPose = (placement: FramePlacement) => {
   const position = new Vector3(
     clamp(frameX + lateralOffset, -CORRIDOR_WIDTH / 2 + 0.6, CORRIDOR_WIDTH / 2 - 0.6),
     CAMERA_EYE_HEIGHT,
-    clamp(frameZ + depthOffset, END_Z - 2, 4),
+    clamp(frameZ + depthOffset, endZ - 2, 4),
   );
 
   const lookAt = new Vector3(frameX, frameY, frameZ);
@@ -31,7 +31,7 @@ const buildTargetPose = (placement: FramePlacement) => {
 };
 
 const CameraDirector = () => {
-  const placements = usePlacements();
+  const { placements, endZ } = usePlacementsLayout();
   const { camera } = useThree();
   const selectedPortraitId = useMuseumStore((state) => state.selectedPortraitId);
   const isInfoPanelOpen = useMuseumStore((state) => state.isInfoPanelOpen);
@@ -60,7 +60,7 @@ const CameraDirector = () => {
     const placement = placements.find((entry) => entry.president.person_id === selectedPortraitId);
     if (!placement) return;
 
-    const { position, orientation } = buildTargetPose(placement);
+    const { position, orientation } = buildTargetPose(placement, endZ);
     const startPosition = camera.position.clone();
     const startOrientation = camera.quaternion.clone();
     const distance = startPosition.distanceTo(position);

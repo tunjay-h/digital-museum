@@ -2,9 +2,17 @@ import { createContext, useContext, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import type { FramePlacement, President } from '../types';
 import presidents from '../data/presidents';
-import { CORRIDOR_WIDTH, FRAME_HEIGHT, FRAME_SPACING, START_Z, END_Z } from './constants';
+import { CORRIDOR_WIDTH, FRAME_HEIGHT, FRAME_SPACING, START_Z } from './constants';
 
-const PlacementsContext = createContext<FramePlacement[]>([]);
+interface PlacementsContextValue {
+  placements: FramePlacement[];
+  endZ: number;
+}
+
+const PlacementsContext = createContext<PlacementsContextValue>({
+  placements: [],
+  endZ: START_Z - FRAME_SPACING * 0.5,
+});
 
 const toPlacement = (
   president: President,
@@ -23,27 +31,39 @@ const toPlacement = (
   };
 };
 
-const endPlacement = (president: President): FramePlacement => ({
+const endPlacement = (president: President, endZ: number): FramePlacement => ({
   president,
-  position: [0, FRAME_HEIGHT, END_Z],
+  position: [0, FRAME_HEIGHT, endZ],
   rotation: [0, 0, 0],
   side: 'end',
 });
 
 const buildPlacements = () => {
   const sorted = [...presidents].sort((a, b) => a.order - b.order);
-  const left = sorted.slice(0, 6).map((president, index) => toPlacement(president, index, 'left'));
-  const right = sorted
-    .slice(6, 12)
-    .map((president, index) => toPlacement(president, index, 'right'));
-  const end = endPlacement(sorted[12]);
-  return [...left, ...right, end];
+  const pairCount = Math.floor(sorted.length / 2);
+  const placements: FramePlacement[] = [];
+
+  for (let i = 0; i < pairCount; i += 1) {
+    const leftIndex = i * 2;
+    const rightIndex = leftIndex + 1;
+    placements.push(toPlacement(sorted[leftIndex], i, 'left'));
+    placements.push(toPlacement(sorted[rightIndex], i, 'right'));
+  }
+
+  const hasEndPlacement = sorted.length % 2 === 1;
+  const endZ = START_Z - FRAME_SPACING * (pairCount + 0.5);
+
+  if (hasEndPlacement) {
+    placements.push(endPlacement(sorted[sorted.length - 1], endZ));
+  }
+
+  return { placements, endZ };
 };
 
 export const PlacementsProvider = ({ children }: { children: ReactNode }) => {
-  const placements = useMemo(() => buildPlacements(), []);
-  return <PlacementsContext.Provider value={placements}>{children}</PlacementsContext.Provider>;
+  const layout = useMemo(() => buildPlacements(), []);
+  return <PlacementsContext.Provider value={layout}>{children}</PlacementsContext.Provider>;
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const usePlacements = () => useContext(PlacementsContext);
+export const usePlacementsLayout = () => useContext(PlacementsContext);

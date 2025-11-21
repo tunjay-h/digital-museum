@@ -3,7 +3,8 @@ import { PointerLockControls } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Vector3 } from 'three';
 import { useMuseumStore } from '../store/useMuseumStore';
-import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH, END_Z } from './constants';
+import { usePlacementsLayout } from './PlacementsContext';
+import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH } from './constants';
 import type { PointerLockControls as PointerLockControlsImpl } from 'three-stdlib';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
@@ -17,6 +18,9 @@ const ControlsDesktop = () => {
   const openInfoPanel = useMuseumStore((state) => state.openInfoPanel);
   const setPointerLockHandlers = useMuseumStore((state) => state.setPointerLockHandlers);
   const focusCandidateId = useMuseumStore((state) => state.focusCandidateId);
+  const isInfoPanelOpen = useMuseumStore((state) => state.isInfoPanelOpen);
+  const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
+  const { endZ } = usePlacementsLayout();
   const focusRef = useRef<string | null>(focusCandidateId);
   const controlsRef = useRef<PointerLockControlsImpl | null>(null);
 
@@ -109,6 +113,10 @@ const ControlsDesktop = () => {
   }, [setPointerLockHandlers]);
 
   useFrame((_, delta) => {
+    if (isInfoPanelOpen || isOverlayOpen) {
+      return;
+    }
+
     const speed = movement.current.sprint ? 20 : 15;
     const acceleration = speed * delta * 2.6;
     const damping = Math.pow(0.88, delta * 60);
@@ -132,7 +140,7 @@ const ControlsDesktop = () => {
     const minX = -CORRIDOR_WIDTH / 2 + 0.6;
     const maxX = CORRIDOR_WIDTH / 2 - 0.6;
     const maxZ = 4;
-    const minZ = END_Z - 2;
+    const minZ = endZ - 2;
 
     camera.position.set(
       clamp(camera.position.x, minX, maxX),
