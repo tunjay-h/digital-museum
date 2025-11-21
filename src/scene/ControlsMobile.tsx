@@ -6,6 +6,7 @@ import { usePlacementsLayout } from './PlacementsContext';
 import { CAMERA_EYE_HEIGHT, CORRIDOR_WIDTH } from './constants';
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
+const LOOK_HORIZONTAL_LIMIT = Math.sin(Math.PI / 3);
 
 const ControlsMobile = () => {
   const { camera } = useThree();
@@ -33,7 +34,9 @@ const ControlsMobile = () => {
     }
 
     const sensitivity = settings.lookSensitivity * 1.2;
-    yaw.current -= mobileLook.x * sensitivity * delta * 2.2;
+    const horizontalLook = clamp(mobileLook.x, -LOOK_HORIZONTAL_LIMIT, LOOK_HORIZONTAL_LIMIT);
+
+    yaw.current -= horizontalLook * sensitivity * delta * 2.2;
     pitch.current -= mobileLook.y * sensitivity * delta * 1.6;
     pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
 
