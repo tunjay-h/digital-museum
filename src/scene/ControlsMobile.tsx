@@ -17,7 +17,6 @@ const ControlsMobile = () => {
   const isOverlayOpen = useMuseumStore((state) => state.isOverlayOpen);
   const { endZ } = usePlacementsLayout();
   const bobPhase = useRef(0);
-  const yawBaseline = useRef(0);
   const yaw = useRef(0);
   const pitch = useRef(0);
   const forward = useRef(new Vector3());
@@ -25,7 +24,6 @@ const ControlsMobile = () => {
 
   useEffect(() => {
     camera.position.set(0, CAMERA_EYE_HEIGHT, 2.8);
-    yawBaseline.current = camera.rotation.y;
     yaw.current = camera.rotation.y;
     pitch.current = camera.rotation.x;
   }, [camera]);
@@ -39,10 +37,7 @@ const ControlsMobile = () => {
     const horizontalLook = clamp(mobileLook.x, -LOOK_HORIZONTAL_LIMIT, LOOK_HORIZONTAL_LIMIT);
 
     yaw.current -= horizontalLook * sensitivity * delta * 2.2;
-    const minYaw = yawBaseline.current - Math.PI / 3;
-    const maxYaw = yawBaseline.current + Math.PI / 3;
-    yaw.current = clamp(yaw.current, minYaw, maxYaw);
-    pitch.current -= mobileLook.y * sensitivity * delta * 1.6;
+    pitch.current += mobileLook.y * sensitivity * delta * 1.6;
     pitch.current = clamp(pitch.current, -Math.PI / 2 + 0.2, Math.PI / 2 - 0.2);
 
     camera.rotation.set(pitch.current, yaw.current, 0);

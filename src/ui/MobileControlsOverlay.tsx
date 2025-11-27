@@ -67,7 +67,7 @@ const MobileControlsOverlay = () => {
     const ny = clamp(dy / LOOK_RADIUS, -1, 1);
     const limitedX = clamp(nx, -LOOK_HORIZONTAL_LIMIT, LOOK_HORIZONTAL_LIMIT);
     setLookVisual({ x: limitedX, y: ny });
-    setMobileLook({ x: limitedX, y: -ny });
+    setMobileLook({ x: limitedX, y: ny });
   };
 
   const handleLookEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
