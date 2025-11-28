@@ -1,0 +1,33 @@
+{
+  "title": "Founders of the Academy",
+  "subtitle": "Scholars and organizers who launched the Azerbaijan National Academy of Sciences",
+  "people": [
+    {
+      "id": "huseyn-javid",
+      "name": "Huseyn Javid",
+      "role": "Poet and intellectual catalyst",
+      "years": "Early 1900s",
+      "image": "/images/presidents/yusif-mammadaliyev.png",
+      "summary": "Advocated for cultural and scientific institutions that later informed the Academy's mission.",
+      "bio": "Javid's literary and intellectual leadership inspired public support for scientific institutions, creating momentum that culminated in the Academy's founding." 
+    },
+    {
+      "id": "mir-aliyev",
+      "name": "Mir Movsum Agha Aliyev",
+      "role": "Statesman and organizer",
+      "years": "1940s",
+      "image": "/images/presidents/musa-aliyev.jpg",
+      "summary": "Coordinated early institutional frameworks that became the Academy.",
+      "bio": "Aliyev bridged governmental support with scholarly needs, helping to secure resources and governance models for the Academy's launch." 
+    },
+    {
+      "id": "sultanov",
+      "name": "Gara Garayev Sultanov",
+      "role": "Scientific advocate",
+      "years": "1940s",
+      "image": "/images/presidents/zahid-khalilov.jpg",
+      "summary": "Promoted multidisciplinary collaboration in the Academy's first programs.",
+      "bio": "Sultanov championed collaborative research across physics, chemistry, and humanities, shaping the Academy's interdisciplinary identity." 
+    }
+  ]
+}

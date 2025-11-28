@@ -78,7 +78,7 @@ const CameraDirector = () => {
     lastTargetId.current = selectedPortraitId;
 
     unlockPointer?.();
-  }, [camera, isInfoPanelOpen, placements, selectedPortraitId, unlockPointer]);
+  }, [camera, endZ, isInfoPanelOpen, placements, selectedPortraitId, unlockPointer]);
 
   useFrame((_, delta) => {
     if (!autopilot.current.active) return;

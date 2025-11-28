@@ -1,0 +1,42 @@
+{
+  "hub": {
+    "title": "ANAS Museum",
+    "subtitle": "Central atrium for the Azerbaijan National Academy of Sciences",
+    "emblemSrc": "/images/anas-emblem.svg",
+    "flagSrc": "/images/az-flag.svg"
+  },
+  "halls": [
+    {
+      "id": "founders",
+      "title": "Founders",
+      "type": "people_gallery",
+      "icon": "users",
+      "dataSrc": "/data/founders.json",
+      "summary": "Pioneers who laid the groundwork for the Academy."
+    },
+    {
+      "id": "presidents",
+      "title": "Presidents",
+      "type": "people_gallery",
+      "icon": "badge",
+      "dataSrc": "/data/presidents.json",
+      "summary": "Presidential leadership across the Academy's history."
+    },
+    {
+      "id": "milestones",
+      "title": "Milestones",
+      "type": "timeline",
+      "icon": "timeline",
+      "dataSrc": "/data/milestones.json",
+      "summary": "Key scientific and institutional milestones."
+    },
+    {
+      "id": "institutes",
+      "title": "Institutes",
+      "type": "exhibits",
+      "icon": "building",
+      "dataSrc": "/data/institutes.json",
+      "summary": "Research institutes within the Academy."
+    }
+  ]
+}
