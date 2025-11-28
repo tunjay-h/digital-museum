@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" aria-labelledby="title desc" role="img">
+  <title id="title">ANAS Emblem</title>
+  <desc id="desc">A stylized circular emblem for the Azerbaijan National Academy of Sciences</desc>
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6e6b4"/>
+      <stop offset="100%" stop-color="#d9a441"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="110" fill="#fdf9f0" stroke="#d2b061" stroke-width="6"/>
+  <circle cx="120" cy="120" r="86" fill="#16314c" opacity="0.92" stroke="#d9a441" stroke-width="6"/>
+  <path d="M120 40 L138 102 L204 102 L150 140 L168 202 L120 162 L72 202 L90 140 L36 102 L102 102 Z" fill="url(#gold)" stroke="#8b6821" stroke-width="4"/>
+  <circle cx="120" cy="120" r="24" fill="#fefefe" stroke="#b98b2d" stroke-width="6"/>
+  <text x="120" y="126" font-family="'Segoe UI', sans-serif" font-size="18" text-anchor="middle" fill="#c3922b" font-weight="700">ANAS</text>
+</svg>

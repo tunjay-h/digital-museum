@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" aria-labelledby="title desc" role="img">
+  <title id="title">Flag of Azerbaijan</title>
+  <desc id="desc">Horizontal tricolor of blue, red, and green with a white crescent and star</desc>
+  <rect width="120" height="80" fill="#3f9cda"/>
+  <rect width="120" height="53.333" y="26.667" fill="#e03c31"/>
+  <rect width="120" height="26.667" y="53.333" fill="#3fa353"/>
+  <path d="M69 40c0 6.8-5.5 12.3-12.3 12.3-4.6 0-8.7-2.5-10.9-6.2 2.2 4.8 7.1 8.1 12.8 8.1 7.8 0 14.2-6.3 14.2-14.2S66.8 25.8 59 25.8c-5.7 0-10.6 3.3-12.8 8.1 2.2-3.7 6.3-6.2 10.9-6.2C63.5 27.7 69 33.2 69 40Z" fill="#fff"/>
+  <polygon points="76 40 82.2 41.9 79 36.4 84.7 33.1 77.8 33.1 76 27 74.2 33.1 67.3 33.1 73 36.4 69.8 41.9 76 40" fill="#fff"/>
+</svg>

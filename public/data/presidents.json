@@ -1,0 +1,60 @@
+{
+  "title": "Presidents of ANAS",
+  "subtitle": "Leaders guiding the Academy across decades",
+  "people": [
+    {
+      "id": "mirgasimov",
+      "name": "Mir Asadulla Mirgasimov",
+      "role": "First President",
+      "years": "1945 – 1947",
+      "image": "/images/presidents/mir-asadulla-mirgasimov.png",
+      "summary": "Surgeon-scholar and institutional founder.",
+      "bio": "Mirgasimov helped define the Academy's early structure and ensured medical sciences had a clear research mandate." 
+    },
+    {
+      "id": "mammadaliyev",
+      "name": "Yusif Mammadaliyev",
+      "role": "President",
+      "years": "1947 – 1950, 1958 – 1961",
+      "image": "/images/presidents/yusif-mammadaliyev.png",
+      "summary": "Chemist of petroleum catalysis; served two non-consecutive terms.",
+      "bio": "Mammadaliyev advanced catalysis research and linked academic work with national energy priorities." 
+    },
+    {
+      "id": "khalilov",
+      "name": "Zahid Khalilov",
+      "role": "President",
+      "years": "1961 – 1967",
+      "image": "/images/presidents/zahid-khalilov.jpg",
+      "summary": "Mathematician of functional analysis and institutional growth leader.",
+      "bio": "Khalilov expanded the Academy's mathematics programs and emphasized international collaboration." 
+    },
+    {
+      "id": "abdullayev",
+      "name": "Hasan Abdullayev",
+      "role": "President",
+      "years": "1970 – 1983",
+      "image": "/images/presidents/hasan-abdullayev.jpg",
+      "summary": "Physicist in semiconductors and solid-state; longest-serving Soviet-era president.",
+      "bio": "Abdullayev invested in physical sciences infrastructure, growing labs that still anchor research output." 
+    },
+    {
+      "id": "karimov",
+      "name": "Mahmud Karimov",
+      "role": "President",
+      "years": "2001 – 2013",
+      "image": "/images/presidents/mahmud-karimov.jpg",
+      "summary": "Physicist who modernized radiation physics and radioecology research.",
+      "bio": "Karimov prioritized modernization and international visibility for Academy scientists." 
+    },
+    {
+      "id": "habibbayli",
+      "name": "Isa Habibbayli",
+      "role": "President",
+      "years": "2022 – present",
+      "image": "/images/presidents/isa-habibbayli.png",
+      "summary": "Literary scholar advancing humanities-sciences integration.",
+      "bio": "Habibbayli focuses on humanities and sciences integration and strategic partnerships for the Academy's future." 
+    }
+  ]
+}

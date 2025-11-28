@@ -1,9 +1,11 @@
 import { Suspense, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Splash from './routes/Splash';
 import Hall from './routes/Hall';
 import { useMuseumStore } from './store/useMuseumStore';
 import LanguageSync from './components/LanguageSync';
+import MuseumHub from './routes/MuseumHub';
+import MuseumHall from './routes/MuseumHall';
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -25,8 +27,12 @@ const AppRoutes = () => {
     <Suspense fallback={null}>
       <Routes>
         <Route path="/" element={<Splash />} />
+        <Route path="/museum" element={<MuseumHub />} />
+        <Route path="/museum/hall/:hallId" element={<MuseumHall />} />
+        <Route path="/museum/hall/:hallId/art/:artId" element={<MuseumHall />} />
         <Route path="/hall" element={<Hall />} />
         <Route path="/hall/art/:id" element={<Hall />} />
+        <Route path="*" element={<Navigate to="/museum" replace />} />
       </Routes>
     </Suspense>
   );
